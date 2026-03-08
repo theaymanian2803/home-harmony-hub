@@ -9,7 +9,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { type SubscriptionDetails } from "@/hooks/useSubscription";
+import { type SubscriptionDetails, getListingLimit } from "@/hooks/useSubscription";
 
 interface Props {
   isSubscribed: boolean;
