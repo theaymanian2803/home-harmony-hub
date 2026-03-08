@@ -85,6 +85,7 @@ export default function SellerDashboard() {
       city: form.get("city") as string,
       state: form.get("state") as string,
       amenities: (form.get("amenities") as string)?.split(",").map((s) => s.trim()).filter(Boolean) || [],
+      images: uploadedImages,
     });
 
     if (error) {
