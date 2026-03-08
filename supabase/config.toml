@@ -1,1 +1,7 @@
 project_id = "jlicpikvuohwgfqtdltn"
+
+[functions.paypal-create-subscription]
+verify_jwt = false
+
+[functions.paypal-activate-subscription]
+verify_jwt = false
