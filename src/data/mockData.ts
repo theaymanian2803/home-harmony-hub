@@ -89,7 +89,7 @@ export const properties: Property[] = [
     sqft: 3100,
     type: "Apartment",
     amenities: ["Concierge", "Terrace", "Gym", "Doorman", "City View"],
-    images: [property3],
+    images: [property3, property1, property5],
     featured: true,
     sellerId: "s1",
     sellerName: "James Morrison",
