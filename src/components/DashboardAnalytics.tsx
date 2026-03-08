@@ -28,6 +28,12 @@ const COLORS = [
 ];
 
 export default function DashboardAnalytics({ listings, savesData = [] }: Props) {
+  const savesMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    savesData.forEach((s) => { map[s.property_id] = s.saves_count; });
+    return map;
+  }, [savesData]);
+
   const viewsData = useMemo(() =>
     listings
       .sort((a, b) => (b.views || 0) - (a.views || 0))
@@ -35,8 +41,9 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
       .map((l) => ({
         name: l.title.length > 18 ? l.title.slice(0, 18) + "…" : l.title,
         views: l.views || 0,
+        saves: savesMap[l.id] || 0,
       })),
-    [listings]
+    [listings, savesMap]
   );
 
   const statusData = useMemo(() => {
