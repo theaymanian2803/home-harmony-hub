@@ -67,8 +67,7 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
     setGeocoding(true);
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`,
-        { headers: { "User-Agent": "EstateHub/1.0" } }
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`
       );
       const data = await res.json();
       if (data && data.length > 0) {
