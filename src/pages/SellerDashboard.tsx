@@ -5,9 +5,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, getListingLimit } from "@/hooks/useSubscription";
@@ -17,16 +15,10 @@ import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
 import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 import SubscriptionManagement from "@/components/SubscriptionManagement";
+import { useTranslation } from "react-i18next";
 
 type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
-
-interface PropertyRow {
-  id: string;
-  title: string;
-  price: number;
-  views: number;
-  status: string;
-}
+interface PropertyRow { id: string; title: string; price: number; views: number; status: string; }
 
 export default function SellerDashboard() {
   const { toast } = useToast();
@@ -34,6 +26,7 @@ export default function SellerDashboard() {
   const { isSubscribed, details, cancelSubscription } = useSubscription();
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("overview");
   const [myListings, setMyListings] = useState<PropertyRow[]>([]);
   const [loadingListings, setLoadingListings] = useState(true);
@@ -41,144 +34,74 @@ export default function SellerDashboard() {
   const [editData, setEditData] = useState<Partial<PropertyFormData> | null>(null);
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(false);
 
-  // Show welcome banner for new subscribers
   useEffect(() => {
     if (isSubscribed && details?.status === "active") {
       const bannerKey = `seller_pro_welcome_shown_${user?.id}`;
-      if (!localStorage.getItem(bannerKey)) {
-        setShowWelcomeBanner(true);
-        localStorage.setItem(bannerKey, "true");
-      }
+      if (!localStorage.getItem(bannerKey)) { setShowWelcomeBanner(true); localStorage.setItem(bannerKey, "true"); }
     }
   }, [isSubscribed, details, user?.id]);
 
-  useEffect(() => {
-    if (!authLoading && !user) navigate("/auth");
-  }, [user, authLoading, navigate]);
+  useEffect(() => { if (!authLoading && !user) navigate("/auth"); }, [user, authLoading, navigate]);
 
   const refreshListings = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("properties")
-      .select("id, title, price, views, status")
-      .eq("user_id", user.id);
+    const { data } = await supabase.from("properties").select("id, title, price, views, status").eq("user_id", user.id);
     setMyListings((data as PropertyRow[]) || []);
     setLoadingListings(false);
   };
 
-  useEffect(() => {
-    if (user) refreshListings();
-  }, [user]);
+  useEffect(() => { if (user) refreshListings(); }, [user]);
 
   const currentPlan = details?.plan || "free";
   const listingLimit = getListingLimit(currentPlan);
   const atLimit = !isAdmin && myListings.length >= listingLimit;
 
   const visibleTabs: { id: Tab; label: string; icon: React.ElementType }[] = [
-    { id: "overview", label: "Overview", icon: LayoutDashboard },
-    { id: "create", label: "New Listing", icon: Plus },
-    { id: "manage", label: "Manage", icon: List },
-    { id: "subscription", label: "Subscription", icon: CreditCard },
+    { id: "overview", label: t("dashboard.overview"), icon: LayoutDashboard },
+    { id: "create", label: t("dashboard.newListing"), icon: Plus },
+    { id: "manage", label: t("dashboard.manage"), icon: List },
+    { id: "subscription", label: t("dashboard.subscription"), icon: CreditCard },
   ];
 
   const handleCreate = async (formData: PropertyFormData) => {
     if (atLimit) {
-      toast({ title: "Listing limit reached", description: `You've reached your ${listingLimit === 2 ? "free plan" : currentPlan} limit. Upgrade to add more listings.`, variant: "destructive" });
+      toast({ title: t("dashboard.listingLimitReached"), description: `${t("dashboard.upgradeDesc")}`, variant: "destructive" });
       return;
     }
     if (!user) return;
-
-    const { error } = await supabase.from("properties").insert({
-      user_id: user.id,
-      ...formData,
-      status: isAdmin ? "active" : "pending",
-    });
-
+    const { error } = await supabase.from("properties").insert({ user_id: user.id, ...formData, status: isAdmin ? "active" : "pending" });
     if (error) {
       if (error.message?.includes("Listing limit reached")) {
-        toast({
-          title: "Listing limit reached",
-          description: `Your ${currentPlan === "free" ? "Free" : currentPlan === "pro" ? "Seller Pro" : ""} plan allows ${listingLimit} listings. Upgrade your plan to list more properties.`,
-          variant: "destructive",
-          action: (
-            <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground" asChild>
-              <Link to="/pricing">Upgrade</Link>
-            </Button>
-          ),
+        toast({ title: t("dashboard.listingLimitReached"), description: t("dashboard.upgradeDesc"), variant: "destructive",
+          action: (<Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground" asChild><Link to="/pricing">{t("dashboard.upgrade")}</Link></Button>),
         });
-      } else {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      }
+      } else { toast({ title: "Error", description: error.message, variant: "destructive" }); }
     } else {
-      toast({ title: isAdmin ? "Listing Published!" : "Listing Submitted!", description: isAdmin ? "Your property is now live." : "Your listing is pending admin approval." });
-      await refreshListings();
-      setTab("manage");
+      toast({ title: isAdmin ? t("dashboard.listingPublished") : t("dashboard.listingSubmitted"), description: isAdmin ? t("dashboard.propertyLive") : t("dashboard.pendingApproval") });
+      await refreshListings(); setTab("manage");
     }
   };
 
   const handleEdit = async (id: string) => {
-    const { data } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("id", id)
-      .single();
-
+    const { data } = await supabase.from("properties").select("*").eq("id", id).single();
     if (data) {
       setEditingId(id);
-      setEditData({
-        title: data.title,
-        description: data.description || "",
-        price: data.price,
-        beds: data.beds || 0,
-        baths: data.baths || 0,
-        sqft: data.sqft || 0,
-        city: data.city || "",
-        state: data.state || "",
-        location: data.location || "",
-        zip_code: (data as any).zip_code || "",
-        neighborhood: (data as any).neighborhood || "",
-        lot_size: (data as any).lot_size || 0,
-        year_built: (data as any).year_built,
-        parking: (data as any).parking || 0,
-        stories: (data as any).stories || 1,
-        heating: (data as any).heating || "",
-        cooling: (data as any).cooling || "",
-        flooring: (data as any).flooring || "",
-        roof: (data as any).roof || "",
-        hoa_fee: (data as any).hoa_fee || 0,
-        property_style: (data as any).property_style || "",
-        latitude: (data as any).latitude,
-        longitude: (data as any).longitude,
-        amenities: data.amenities || [],
-        images: data.images || [],
-      });
+      setEditData({ title: data.title, description: data.description || "", price: data.price, beds: data.beds || 0, baths: data.baths || 0, sqft: data.sqft || 0, city: data.city || "", state: data.state || "", location: data.location || "", zip_code: (data as any).zip_code || "", neighborhood: (data as any).neighborhood || "", lot_size: (data as any).lot_size || 0, year_built: (data as any).year_built, parking: (data as any).parking || 0, stories: (data as any).stories || 1, heating: (data as any).heating || "", cooling: (data as any).cooling || "", flooring: (data as any).flooring || "", roof: (data as any).roof || "", hoa_fee: (data as any).hoa_fee || 0, property_style: (data as any).property_style || "", latitude: (data as any).latitude, longitude: (data as any).longitude, amenities: data.amenities || [], images: data.images || [] });
       setTab("edit");
     }
   };
 
   const handleUpdate = async (formData: PropertyFormData) => {
     if (!editingId) return;
-
-    const { error } = await supabase
-      .from("properties")
-      .update(formData)
-      .eq("id", editingId);
-
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Listing Updated!", description: "Changes saved successfully." });
-      setEditingId(null);
-      setEditData(null);
-      await refreshListings();
-      setTab("manage");
-    }
+    const { error } = await supabase.from("properties").update(formData).eq("id", editingId);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    else { toast({ title: t("dashboard.listingUpdated"), description: t("dashboard.changesSaved") }); setEditingId(null); setEditData(null); await refreshListings(); setTab("manage"); }
   };
 
   const handleDelete = async (id: string) => {
     await supabase.from("properties").delete().eq("id", id);
     setMyListings((prev) => prev.filter((p) => p.id !== id));
-    toast({ title: "Listing Deleted", variant: "destructive" });
+    toast({ title: t("dashboard.listingDeleted"), variant: "destructive" });
   };
 
   if (authLoading || !user) return null;
@@ -187,131 +110,76 @@ export default function SellerDashboard() {
     <div className="min-h-screen bg-secondary/30">
       <Navbar />
       <div className="container mx-auto px-4 pb-16 pt-24">
-        <h1 className="font-display text-3xl font-bold text-foreground">Seller Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Manage your property listings</p>
+        <h1 className="font-display text-3xl font-bold text-foreground">{t("dashboard.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
 
-        {/* Tabs */}
         <div className="mt-6 flex gap-2 border-b border-border pb-2">
-          {visibleTabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => { setTab(t.id); if (t.id !== "edit") { setEditingId(null); setEditData(null); } }}
-              className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                tab === t.id ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              <t.icon className="h-4 w-4" /> {t.label}
+          {visibleTabs.map((tb) => (
+            <button key={tb.id} onClick={() => { setTab(tb.id); if (tb.id !== "edit") { setEditingId(null); setEditData(null); } }}
+              className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors ${tab === tb.id ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"}`}>
+              <tb.icon className="h-4 w-4" /> {tb.label}
             </button>
           ))}
-          {tab === "edit" && (
-            <span className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">
-              <Edit className="h-4 w-4" /> Edit Listing
-            </span>
-          )}
+          {tab === "edit" && (<span className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground"><Edit className="h-4 w-4" /> {t("dashboard.editListing")}</span>)}
         </div>
 
-        {/* Free tier banner */}
         {!isAdmin && listingLimit !== Infinity && (
           <div className="mt-6 flex flex-col gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-accent/10 p-2"><Lock className="h-5 w-5 text-accent" /></div>
               <div>
-                <p className="text-sm font-semibold text-foreground">{currentPlan === "free" ? "Free" : "Seller Pro"} Plan — {myListings.length}/{listingLimit} listings used</p>
-                <p className="text-xs text-muted-foreground">
-                  {currentPlan === "free" ? "Upgrade for more listings, analytics & more." : "Upgrade to Unlimited for unlimited listings."}
-                </p>
+                <p className="text-sm font-semibold text-foreground">{currentPlan === "free" ? t("dashboard.freePlan") : t("dashboard.sellerPro")} — {myListings.length}/{listingLimit} {t("dashboard.listingsUsed")}</p>
+                <p className="text-xs text-muted-foreground">{currentPlan === "free" ? t("dashboard.upgradeDesc") : t("dashboard.upgradeUnlimitedDesc")}</p>
               </div>
             </div>
-            <Button size="sm" className="gradient-caramel text-accent-foreground hover:opacity-90" asChild>
-              <Link to="/pricing">Upgrade <ArrowRight className="ml-1 h-3 w-3" /></Link>
-            </Button>
+            <Button size="sm" className="gradient-caramel text-accent-foreground hover:opacity-90" asChild><Link to="/pricing">{t("dashboard.upgrade")} <ArrowRight className="ml-1 h-3 w-3" /></Link></Button>
           </div>
         )}
 
-        {/* Welcome banner for new Pro subscribers */}
         {showWelcomeBanner && (
           <div className="mt-6 relative flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-primary/10 p-2"><PartyPopper className="h-5 w-5 text-primary" /></div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">Welcome to Seller Pro! 🎉</p>
-                <p className="text-xs text-muted-foreground">You now have unlimited listings, advanced analytics, and priority support. Start creating!</p>
-              </div>
+              <div><p className="text-sm font-semibold text-foreground">{t("dashboard.welcomePro")}</p><p className="text-xs text-muted-foreground">{t("dashboard.welcomeProDesc")}</p></div>
             </div>
-            <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/5" onClick={() => setTab("create")}>
-              Create a Listing <ArrowRight className="ml-1 h-3 w-3" />
-            </Button>
-            <button
-              onClick={() => setShowWelcomeBanner(false)}
-              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/5" onClick={() => setTab("create")}>{t("dashboard.createAListing")} <ArrowRight className="ml-1 h-3 w-3" /></Button>
+            <button onClick={() => setShowWelcomeBanner(false)} className="absolute top-2 right-2 text-muted-foreground hover:text-foreground transition-colors"><X className="h-4 w-4" /></button>
           </div>
         )}
+
         {tab === "overview" && (
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             {[
-              { label: "Active Listings", value: myListings.length, icon: List },
-              { label: "Total Views", value: myListings.reduce((s, p) => s + (p.views || 0), 0).toLocaleString(), icon: Eye },
-              { label: "Messages", value: "—", icon: MessageSquare },
+              { label: t("dashboard.activeListings"), value: myListings.length, icon: List },
+              { label: t("dashboard.totalViews"), value: myListings.reduce((s, p) => s + (p.views || 0), 0).toLocaleString(), icon: Eye },
+              { label: t("dashboard.messages"), value: "—", icon: MessageSquare },
             ].map((stat) => (
               <div key={stat.label} className="rounded-lg border border-border bg-card p-6">
                 <div className="flex items-center gap-3">
                   <div className="rounded-lg bg-accent/10 p-2"><stat.icon className="h-5 w-5 text-accent" /></div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground font-display">{stat.value}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  </div>
+                  <div><p className="text-2xl font-bold text-foreground font-display">{stat.value}</p><p className="text-sm text-muted-foreground">{stat.label}</p></div>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Create listing */}
-        {tab === "create" && (
-          <PropertyForm userId={user.id} onSubmit={handleCreate} submitLabel="Publish Listing" />
-        )}
+        {tab === "create" && <PropertyForm userId={user.id} onSubmit={handleCreate} submitLabel={t("dashboard.publishListing")} />}
 
-        {/* Edit listing */}
         {tab === "edit" && editData && (
           <div>
-            <button
-              onClick={() => { setTab("manage"); setEditingId(null); setEditData(null); }}
-              className="mt-4 text-sm text-muted-foreground hover:text-accent transition-colors"
-            >
-              ← Back to listings
-            </button>
-            <PropertyForm
-              key={editingId}
-              userId={user.id}
-              initialData={editData}
-              onSubmit={handleUpdate}
-              submitLabel="Save Changes"
-            />
+            <button onClick={() => { setTab("manage"); setEditingId(null); setEditData(null); }} className="mt-4 text-sm text-muted-foreground hover:text-accent transition-colors">{t("dashboard.backToListings")}</button>
+            <PropertyForm key={editingId} userId={user.id} initialData={editData} onSubmit={handleUpdate} submitLabel={t("dashboard.saveChanges")} />
           </div>
         )}
 
-        {/* Manage */}
         {tab === "manage" && (
           <div className="mt-8 overflow-x-auto rounded-lg border border-border bg-card">
             {myListings.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                <p>No listings yet.</p>
-                <Button variant="link" className="text-accent" onClick={() => setTab("create")}>Create your first listing</Button>
-              </div>
+              <div className="p-8 text-center text-muted-foreground"><p>{t("dashboard.noListings")}</p><Button variant="link" className="text-accent" onClick={() => setTab("create")}>{t("dashboard.createFirst")}</Button></div>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Views</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
+                <TableHeader><TableRow><TableHead>{t("dashboard.property")}</TableHead><TableHead>{t("dashboard.price")}</TableHead><TableHead>{t("dashboard.views")}</TableHead><TableHead>{t("dashboard.status")}</TableHead><TableHead className="text-right">{t("dashboard.actions")}</TableHead></TableRow></TableHeader>
                 <TableBody>
                   {myListings.map((p) => (
                     <TableRow key={p.id}>
@@ -319,27 +187,15 @@ export default function SellerDashboard() {
                       <TableCell>{formatPrice(p.price)}</TableCell>
                       <TableCell>{(p.views || 0).toLocaleString()}</TableCell>
                       <TableCell>
-                        {p.status === "active" && (
-                          <Badge variant="secondary" className="bg-accent/10 text-accent">Active</Badge>
-                        )}
-                        {p.status === "pending" && (
-                          <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600">Pending</Badge>
-                        )}
-                        {p.status === "rejected" && (
-                          <Badge variant="secondary" className="bg-destructive/10 text-destructive">Rejected</Badge>
-                        )}
-                        {!["active", "pending", "rejected"].includes(p.status) && (
-                          <Badge variant="secondary">{p.status}</Badge>
-                        )}
+                        {p.status === "active" && <Badge variant="secondary" className="bg-accent/10 text-accent">Active</Badge>}
+                        {p.status === "pending" && <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600">{t("dashboard.pending")}</Badge>}
+                        {p.status === "rejected" && <Badge variant="secondary" className="bg-destructive/10 text-destructive">{t("dashboard.rejected")}</Badge>}
+                        {!["active", "pending", "rejected"].includes(p.status) && <Badge variant="secondary">{p.status}</Badge>}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button size="icon" variant="ghost" onClick={() => handleEdit(p.id)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleDelete(p.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <Button size="icon" variant="ghost" onClick={() => handleEdit(p.id)}><Edit className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4" /></Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -350,14 +206,7 @@ export default function SellerDashboard() {
           </div>
         )}
 
-        {/* Subscription */}
-        {tab === "subscription" && (
-          <SubscriptionManagement
-            isSubscribed={isSubscribed}
-            details={details}
-            onCancel={cancelSubscription}
-          />
-        )}
+        {tab === "subscription" && <SubscriptionManagement isSubscribed={isSubscribed} details={details} onCancel={cancelSubscription} />}
       </div>
     </div>
   );
