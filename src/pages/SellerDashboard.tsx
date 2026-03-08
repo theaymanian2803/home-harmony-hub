@@ -65,6 +65,30 @@ export default function SellerDashboard() {
           ))}
         </div>
 
+        {/* Free tier banner */}
+        {!isSubscribed && (
+          <div className="mt-6 flex flex-col gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-accent/10 p-2">
+                <Lock className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Free Plan — {myListings.length}/{FREE_LISTING_LIMIT} listings used
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Upgrade to Seller Pro for unlimited listings, analytics & more.
+                </p>
+              </div>
+            </div>
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-emerald-light" asChild>
+              <Link to="/pricing">
+                Upgrade <ArrowRight className="ml-1 h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
+        )}
+
         {/* Overview */}
         {tab === "overview" && (
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
