@@ -66,6 +66,47 @@ export default function AdminLandingControls() {
     setSaving(false);
   };
 
+  const saveHeroBgImage = async (url: string) => {
+    const { error } = await supabase
+      .from("site_content")
+      .update({ value: url, updated_at: new Date().toISOString() } as any)
+      .eq("key", "hero_bg_image");
+    if (error) toast({ title: "Error saving image", variant: "destructive" });
+    else { toast({ title: "Background image updated" }); await refetch(); }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+    setUploadingImage(true);
+    const ext = file.name.split(".").pop();
+    const path = `hero-bg-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } else {
+      const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
+      await saveHeroBgImage(urlData.publicUrl);
+    }
+    setUploadingImage(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleSetExternalUrl = async () => {
+    const url = imageUrlInput.trim();
+    if (!url) return;
+    await saveHeroBgImage(url);
+    setImageUrlInput("");
+  };
+
+  const handleRemoveBgImage = async () => {
+    await saveHeroBgImage("");
+  };
+
   const handleAddTestimonial = async () => {
     if (!newTestimonial.name || !newTestimonial.quote) {
       toast({ title: "Name and quote are required", variant: "destructive" });
