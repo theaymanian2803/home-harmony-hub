@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone } from "lucide-react";
+import { useState, useRef } from "react";
+import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone, Upload, Link as LinkIcon, ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,10 +12,13 @@ type SubTab = "hero" | "stats" | "sections" | "testimonials";
 
 export default function AdminLandingControls() {
   const { toast } = useToast();
-  const { content, testimonials, getBySection, refetch } = useSiteContent();
+  const { content, testimonials, getBySection, getValue, refetch } = useSiteContent();
   const [subTab, setSubTab] = useState<SubTab>("hero");
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageUrlInput, setImageUrlInput] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Testimonial form
   const [newTestimonial, setNewTestimonial] = useState({ name: "", role: "", quote: "", rating: 5, avatar: "" });
