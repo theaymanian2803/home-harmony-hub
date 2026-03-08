@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
 import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
+import SubscriptionManagement from "@/components/SubscriptionManagement";
 
 type Tab = "overview" | "create" | "manage" | "edit";
 const FREE_LISTING_LIMIT = 2;
