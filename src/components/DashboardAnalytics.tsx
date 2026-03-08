@@ -119,33 +119,6 @@ export default function DashboardAnalytics({ listings }: Props) {
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* Price Distribution */}
-        <div className="rounded-xl border border-border bg-card p-5 md:col-span-2">
-          <h4 className="font-display text-lg font-semibold text-foreground mb-4">Price Distribution</h4>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={priceDistribution}>
-              <XAxis dataKey="range" tick={{ fontSize: 11, fill: "hsl(25, 15%, 45%)" }} />
-              <YAxis tick={{ fontSize: 11, fill: "hsl(25, 15%, 45%)" }} allowDecimals={false} />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(30, 15%, 91%)",
-                  border: "1px solid hsl(30, 12%, 82%)",
-                  borderRadius: "0.75rem",
-                  fontSize: "0.8rem",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="count"
-                stroke="hsl(25, 65%, 45%)"
-                fill="hsl(25, 65%, 45%)"
-                fillOpacity={0.2}
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
       </div>
     </div>
   );
