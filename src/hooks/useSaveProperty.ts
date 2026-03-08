@@ -2,13 +2,16 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function useSaveProperty(propertyId: string) {
   const { user } = useAuth();
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isValidUuid = UUID_REGEX.test(propertyId);
 
   useEffect(() => {
-    if (!user) { setSaved(false); return; }
+    if (!user || !isValidUuid) { setSaved(false); return; }
     supabase
       .from("saved_properties")
       .select("id")
@@ -19,7 +22,7 @@ export function useSaveProperty(propertyId: string) {
   }, [user, propertyId]);
 
   const toggle = useCallback(async () => {
-    if (!user || loading) return false;
+    if (!user || loading || !isValidUuid) return false;
     setLoading(true);
     try {
       if (saved) {
@@ -34,7 +37,7 @@ export function useSaveProperty(propertyId: string) {
     } finally {
       setLoading(false);
     }
-  }, [user, propertyId, saved, loading]);
+  }, [user, propertyId, saved, loading, isValidUuid]);
 
   return { saved, toggle, isLoggedIn: !!user };
 }
