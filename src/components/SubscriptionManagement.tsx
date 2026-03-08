@@ -83,7 +83,7 @@ export default function SubscriptionManagement({ isSubscribed, details, onCancel
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center gap-3">
-            <Badge className="bg-accent/10 text-accent border-accent/20">Seller Pro</Badge>
+            <Badge className="bg-accent/10 text-accent border-accent/20">{details?.plan === "unlimited" ? "Unlimited" : "Seller Pro"}</Badge>
             <div className="flex items-center gap-1 text-sm text-green-600">
               <CheckCircle className="h-4 w-4" /> Active
             </div>
