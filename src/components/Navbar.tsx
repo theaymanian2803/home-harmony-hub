@@ -15,6 +15,8 @@ import { useAdmin } from "@/hooks/useAdmin";
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/search", label: "Properties" },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
   { to: "/pricing", label: "Pricing" },
 ];
 
