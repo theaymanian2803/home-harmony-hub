@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal, X, Map, LayoutGrid, Columns2, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import SearchMapView from "@/components/SearchMapView";
+import SavedSearches, { type SearchFilters } from "@/components/SavedSearches";
 import { properties as mockProperties, type Property } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 
