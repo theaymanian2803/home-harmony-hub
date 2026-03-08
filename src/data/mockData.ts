@@ -57,6 +57,8 @@ export const properties: Property[] = [
     sellerName: "James Morrison",
     createdAt: "2026-02-15",
     views: 1243,
+    latitude: 34.0736,
+    longitude: -118.4004,
   },
   {
     id: "2",
