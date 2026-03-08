@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Building2, Menu, X, User, LogIn, LogOut, Shield, Home, Search, MapPin, DollarSign, Info, Phone, Mail, HelpCircle, FileText, Users, Star, ChevronDown, TrendingUp, Building, Landmark, TreePine } from "lucide-react";
+import { Building2, Menu, X, User, LogIn, LogOut, Shield, Home, Search, MapPin, DollarSign, Info, Mail, FileText, Users, ChevronDown, TrendingUp, Building, Landmark, TreePine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +12,8 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 function MegaMenuTrigger({ label, isActive, children }: { label: string; isActive?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -63,6 +65,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     await signOut();
@@ -91,82 +94,84 @@ export default function Navbar() {
               location.pathname === "/" ? "neu-pressed text-accent" : "text-muted-foreground hover:text-foreground"
             )}
           >
-            Home
+            {t("nav.home")}
           </Link>
 
-          {/* Properties Mega Menu */}
-          <MegaMenuTrigger label="Properties" isActive={isPropertyPage}>
+          <MegaMenuTrigger label={t("nav.properties")} isActive={isPropertyPage}>
             <div className="grid grid-cols-2 gap-1">
-              <MegaMenuItem to="/search" icon={Search} title="Browse All" description="Explore all available listings" />
-              <MegaMenuItem to="/search?type=house" icon={Home} title="Houses" description="Single-family homes" />
-              <MegaMenuItem to="/search?type=apartment" icon={Building} title="Apartments" description="Urban living spaces" />
-              <MegaMenuItem to="/search?type=condo" icon={Landmark} title="Condos" description="Modern condominiums" />
-              <MegaMenuItem to="/search?type=land" icon={TreePine} title="Land" description="Build your dream property" />
-              <MegaMenuItem to="/search?type=commercial" icon={TrendingUp} title="Commercial" description="Business & investment" />
+              <MegaMenuItem to="/search" icon={Search} title={t("nav.browseAll")} description={t("nav.exploreAll")} />
+              <MegaMenuItem to="/search?type=house" icon={Home} title={t("nav.houses")} description={t("nav.singleFamily")} />
+              <MegaMenuItem to="/search?type=apartment" icon={Building} title={t("nav.apartments")} description={t("nav.urbanLiving")} />
+              <MegaMenuItem to="/search?type=condo" icon={Landmark} title={t("nav.condos")} description={t("nav.modernCondos")} />
+              <MegaMenuItem to="/search?type=land" icon={TreePine} title={t("nav.land")} description={t("nav.buildDream")} />
+              <MegaMenuItem to="/search?type=commercial" icon={TrendingUp} title={t("nav.commercial")} description={t("nav.businessInvestment")} />
             </div>
             <div className="mt-3 border-t border-border/50 pt-3">
               <Link to="/search" className="flex items-center gap-2 text-xs font-medium text-accent hover:underline">
-                <MapPin className="h-3 w-3" /> View all properties on the map →
+                <MapPin className="h-3 w-3" /> {t("nav.viewAllMap")} →
               </Link>
             </div>
           </MegaMenuTrigger>
 
-          {/* Company Mega Menu */}
-          <MegaMenuTrigger label="Company" isActive={isCompanyPage}>
+          <MegaMenuTrigger label={t("nav.company")} isActive={isCompanyPage}>
             <div className="grid grid-cols-2 gap-1">
-              <MegaMenuItem to="/about" icon={Info} title="About Us" description="Our story and mission" />
-              <MegaMenuItem to="/contact" icon={Mail} title="Contact" description="Get in touch with us" />
-              <MegaMenuItem to="/pricing" icon={DollarSign} title="Pricing" description="Plans for every need" />
-              <MegaMenuItem to="/terms" icon={FileText} title="Terms" description="Terms of service" />
-              <MegaMenuItem to="/privacy" icon={Shield} title="Privacy" description="How we protect your data" />
-              <MegaMenuItem to="/about" icon={Users} title="Our Team" description="Meet the people behind EstateHub" />
+              <MegaMenuItem to="/about" icon={Info} title={t("nav.aboutUs")} description={t("nav.ourStory")} />
+              <MegaMenuItem to="/contact" icon={Mail} title={t("nav.contact")} description={t("nav.getInTouch")} />
+              <MegaMenuItem to="/pricing" icon={DollarSign} title={t("nav.pricing")} description={t("nav.plansForEvery")} />
+              <MegaMenuItem to="/terms" icon={FileText} title={t("nav.terms")} description={t("nav.termsOfService")} />
+              <MegaMenuItem to="/privacy" icon={Shield} title={t("nav.privacy")} description={t("nav.protectData")} />
+              <MegaMenuItem to="/about" icon={Users} title={t("nav.ourTeam")} description={t("nav.meetPeople")} />
             </div>
           </MegaMenuTrigger>
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <LanguageSwitcher />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground">
                   <User className="mr-1 h-4 w-4" />
-                  {user.user_metadata?.full_name || "Account"}
+                  {user.user_metadata?.full_name || t("nav.account")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link to="/profile">My Profile</Link>
+                  <Link to="/profile">{t("nav.myProfile")}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/dashboard">Seller Dashboard</Link>
+                  <Link to="/dashboard">{t("nav.sellerDashboard")}</Link>
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem asChild>
                     <Link to="/admin" className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" /> Admin Panel
+                      <Shield className="h-4 w-4" /> {t("nav.adminPanel")}
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                  <LogOut className="mr-2 h-4 w-4" /> {t("nav.signOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground" asChild>
-              <Link to="/auth"><LogIn className="mr-1 h-4 w-4" /> Sign In</Link>
+              <Link to="/auth"><LogIn className="mr-1 h-4 w-4" /> {t("nav.signIn")}</Link>
             </Button>
           )}
           <Button size="sm" className="gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl shadow-md" asChild>
-            <Link to={user ? "/dashboard" : "/auth"}>List Property</Link>
+            <Link to={user ? "/dashboard" : "/auth"}>{t("nav.listProperty")}</Link>
           </Button>
         </div>
 
         {/* Mobile toggle */}
-        <button className="text-foreground lg:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <LanguageSwitcher />
+          <button className="text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -175,16 +180,15 @@ export default function Navbar() {
           <nav className="container mx-auto flex flex-col gap-1 px-4 py-4">
             <Link to="/" onClick={() => setMobileOpen(false)}
               className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50">
-              Home
+              {t("nav.home")}
             </Link>
 
-            {/* Mobile Properties section */}
-            <p className="mt-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">Properties</p>
+            <p className="mt-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">{t("nav.properties")}</p>
             {[
-              { to: "/search", label: "Browse All" },
-              { to: "/search?type=house", label: "Houses" },
-              { to: "/search?type=apartment", label: "Apartments" },
-              { to: "/search?type=condo", label: "Condos" },
+              { to: "/search", label: t("nav.browseAll") },
+              { to: "/search?type=house", label: t("nav.houses") },
+              { to: "/search?type=apartment", label: t("nav.apartments") },
+              { to: "/search?type=condo", label: t("nav.condos") },
             ].map((link) => (
               <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50">
@@ -192,12 +196,11 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Mobile Company section */}
-            <p className="mt-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">Company</p>
+            <p className="mt-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">{t("nav.company")}</p>
             {[
-              { to: "/about", label: "About" },
-              { to: "/contact", label: "Contact" },
-              { to: "/pricing", label: "Pricing" },
+              { to: "/about", label: t("nav.aboutUs") },
+              { to: "/contact", label: t("nav.contact") },
+              { to: "/pricing", label: t("nav.pricing") },
             ].map((link) => (
               <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50">
@@ -208,34 +211,34 @@ export default function Navbar() {
             {user && (
               <Link to="/profile" onClick={() => setMobileOpen(false)}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50">
-                My Profile
+                {t("nav.myProfile")}
               </Link>
             )}
             {user && (
               <Link to="/dashboard" onClick={() => setMobileOpen(false)}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50">
-                Seller Dashboard
+                {t("nav.sellerDashboard")}
               </Link>
             )}
             {isAdmin && (
               <Link to="/admin" onClick={() => setMobileOpen(false)}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground">
-                <Shield className="mr-1 inline h-4 w-4" /> Admin Panel
+                <Shield className="mr-1 inline h-4 w-4" /> {t("nav.adminPanel")}
               </Link>
             )}
             {user ? (
               <button onClick={() => { handleSignOut(); setMobileOpen(false); }}
                 className="rounded-xl px-4 py-2.5 text-left text-sm font-medium text-muted-foreground hover:text-foreground">
-                Sign Out
+                {t("nav.signOut")}
               </button>
             ) : (
               <Link to="/auth" onClick={() => setMobileOpen(false)}
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground">
-                Sign In
+                {t("nav.signIn")}
               </Link>
             )}
             <Button size="sm" className="mt-2 gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl" asChild>
-              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setMobileOpen(false)}>List Property</Link>
+              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setMobileOpen(false)}>{t("nav.listProperty")}</Link>
             </Button>
           </nav>
         </div>

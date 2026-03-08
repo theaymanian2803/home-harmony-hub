@@ -2,36 +2,11 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Search, MessageSquare, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-
-const steps = [
-  {
-    step: "01",
-    title: "Search",
-    desc: "Browse curated listings by location, price, type, and amenities — with smart filters that learn what you love.",
-    icon: Search,
-    accent: "from-[hsl(var(--chocolate))] to-[hsl(var(--caramel))]",
-  },
-  {
-    step: "02",
-    title: "Connect",
-    desc: "Message verified sellers directly. Schedule tours, ask questions, and negotiate — all in one place.",
-    icon: MessageSquare,
-    accent: "from-[hsl(var(--caramel))] to-[hsl(var(--chocolate-light))]",
-  },
-  {
-    step: "03",
-    title: "Close",
-    desc: "Finalize your purchase with full transparency. No hidden fees, no surprises — just your new keys.",
-    icon: Key,
-    accent: "from-[hsl(var(--chocolate-light))] to-[hsl(var(--chocolate))]",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.2 },
-  },
+  visible: { transition: { staggerChildren: 0.2 } },
 };
 
 const cardVariants = {
@@ -40,12 +15,35 @@ const cardVariants = {
 };
 
 export default function HowItWorks() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      step: "01",
+      title: t("howItWorks.searchTitle"),
+      desc: t("howItWorks.searchDesc"),
+      icon: Search,
+      accent: "from-[hsl(var(--chocolate))] to-[hsl(var(--caramel))]",
+    },
+    {
+      step: "02",
+      title: t("howItWorks.connectTitle"),
+      desc: t("howItWorks.connectDesc"),
+      icon: MessageSquare,
+      accent: "from-[hsl(var(--caramel))] to-[hsl(var(--chocolate-light))]",
+    },
+    {
+      step: "03",
+      title: t("howItWorks.closeTitle"),
+      desc: t("howItWorks.closeDesc"),
+      icon: Key,
+      accent: "from-[hsl(var(--chocolate-light))] to-[hsl(var(--chocolate))]",
+    },
+  ];
+
   return (
     <section className="relative overflow-hidden py-24 md:py-32">
-      {/* Full-bleed dark background */}
       <div className="absolute inset-0 bg-[hsl(var(--cocoa-dark))]" />
-
-      {/* Subtle grid pattern */}
       <div
         className="absolute inset-0 opacity-[0.04]"
         style={{
@@ -54,13 +52,10 @@ export default function HowItWorks() {
           backgroundSize: "60px 60px",
         }}
       />
-
-      {/* Glow orbs */}
       <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-[hsl(var(--chocolate)/0.15)] blur-[120px]" />
       <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] rounded-full bg-[hsl(var(--caramel)/0.1)] blur-[100px]" />
 
       <div className="container relative z-10 mx-auto px-4">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -69,20 +64,19 @@ export default function HowItWorks() {
           className="text-center"
         >
           <span className="inline-block rounded-full border border-[hsl(var(--caramel)/0.3)] bg-[hsl(var(--caramel)/0.08)] px-5 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[hsl(var(--caramel))]">
-            How It Works
+            {t("howItWorks.badge")}
           </span>
           <h2 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-[hsl(var(--cream))] md:text-6xl">
-            Three steps to{" "}
+            {t("howItWorks.titleStart")}{" "}
             <span className="bg-gradient-to-r from-[hsl(var(--caramel))] to-[hsl(var(--chocolate-light))] bg-clip-text text-transparent">
-              your dream home
+              {t("howItWorks.titleHighlight")}
             </span>
           </h2>
           <p className="mx-auto mt-5 max-w-lg text-base text-[hsl(var(--latte)/0.6)] md:text-lg">
-            No complicated processes, no hidden fees. Just a streamlined path from discovery to doorstep.
+            {t("howItWorks.subtitle")}
           </p>
         </motion.div>
 
-        {/* Steps */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -92,39 +86,26 @@ export default function HowItWorks() {
         >
           {steps.map((s, i) => (
             <motion.div key={s.step} variants={cardVariants} className="relative flex">
-              {/* Connector */}
               {i < steps.length - 1 && (
                 <div className="absolute right-0 top-1/2 z-20 hidden h-px w-full -translate-y-1/2 md:block">
                   <div className="mx-auto h-[2px] w-full bg-gradient-to-r from-transparent via-[hsl(var(--caramel)/0.25)] to-transparent" />
                 </div>
               )}
-
               <div className="group relative z-10 flex w-full flex-col items-center rounded-3xl border border-[hsl(var(--cocoa-light)/0.3)] bg-[hsl(var(--cocoa)/0.6)] p-8 backdrop-blur-sm transition-all duration-500 hover:border-[hsl(var(--caramel)/0.4)] hover:bg-[hsl(var(--cocoa)/0.8)] md:mx-3 md:p-10">
-                {/* Hover glow */}
                 <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${s.accent} opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-[0.07]`} />
-
-                {/* Step number — large watermark */}
                 <span className="absolute right-6 top-4 font-display text-7xl font-black text-[hsl(var(--cream)/0.04)] transition-all duration-500 group-hover:text-[hsl(var(--caramel)/0.08)]">
                   {s.step}
                 </span>
-
-                {/* Icon */}
                 <div className={`relative mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${s.accent} shadow-lg shadow-[hsl(var(--chocolate)/0.3)] transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
                   <s.icon className="h-7 w-7 text-accent-foreground" />
                 </div>
-
-                <h3 className="font-display text-2xl font-bold text-[hsl(var(--cream))]">
-                  {s.title}
-                </h3>
-                <p className="mt-3 text-center text-sm leading-relaxed text-[hsl(var(--latte)/0.5)]">
-                  {s.desc}
-                </p>
+                <h3 className="font-display text-2xl font-bold text-[hsl(var(--cream))]">{s.title}</h3>
+                <p className="mt-3 text-center text-sm leading-relaxed text-[hsl(var(--latte)/0.5)]">{s.desc}</p>
               </div>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -138,7 +119,7 @@ export default function HowItWorks() {
             asChild
           >
             <Link to="/search">
-              Start Browsing <ArrowRight className="ml-2 h-5 w-5" />
+              {t("howItWorks.startBrowsing")} <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </motion.div>
