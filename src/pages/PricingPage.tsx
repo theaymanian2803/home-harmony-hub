@@ -63,8 +63,9 @@ export default function PricingPage() {
 
     setSubscribing(true);
     try {
-      const { approvalUrl } = await createSubscription();
+      const { approvalUrl, subscriptionId } = await createSubscription();
       if (approvalUrl) {
+        localStorage.setItem("pending_subscription_id", subscriptionId);
         window.location.href = approvalUrl;
       }
     } catch (err: any) {
