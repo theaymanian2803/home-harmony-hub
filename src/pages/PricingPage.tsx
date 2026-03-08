@@ -277,6 +277,72 @@ export default function PricingPage() {
             <>Already have an account? <Link to="/auth" className="text-accent hover:underline">Sign in</Link></>
           )}
         </p>
+
+        {/* FAQ Section */}
+        <div className="mx-auto mt-20 max-w-2xl text-left">
+          <h2 className="text-center font-display text-2xl font-bold text-foreground">
+            Frequently Asked Questions
+          </h2>
+          <p className="mt-2 text-center text-sm text-muted-foreground">
+            Everything you need to know about our plans.
+          </p>
+
+          <Accordion type="single" collapsible className="mt-8">
+            <AccordionItem value="cancel">
+              <AccordionTrigger className="text-sm font-medium text-foreground">
+                Can I cancel my subscription at any time?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                Yes! You can cancel your subscription at any time from your Seller Dashboard under the Subscription tab. Your access continues until the end of your current billing period — no partial refunds, but no surprise charges either.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="switch">
+              <AccordionTrigger className="text-sm font-medium text-foreground">
+                Can I switch between plans?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                Absolutely. You can upgrade from Seller Pro to Unlimited at any time. To downgrade, simply cancel your current plan and subscribe to the lower tier once your billing period ends.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="annual">
+              <AccordionTrigger className="text-sm font-medium text-foreground">
+                How does annual billing work?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                When you choose annual billing, you pay for 12 months upfront at a 20% discount compared to the monthly price. For Seller Pro that's $96/year instead of $120, and for Unlimited it's $864/year instead of $1,080.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="listings">
+              <AccordionTrigger className="text-sm font-medium text-foreground">
+                What happens to my listings if I downgrade?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                Your existing listings stay active, but you won't be able to create new ones until you're within your plan's limit. For example, if you have 10 listings and downgrade to Free (2 listings), your 10 listings remain live but you can't add more until you remove some or upgrade again.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="payment">
+              <AccordionTrigger className="text-sm font-medium text-foreground">
+                What payment methods do you accept?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                We process all payments securely through PayPal. You can pay with your PayPal balance, linked bank account, or any major credit or debit card through PayPal's checkout.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="free-limit">
+              <AccordionTrigger className="text-sm font-medium text-foreground">
+                Is the Free plan really free forever?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground">
+                Yes — the Free plan lets you list up to 2 properties at no cost, with no time limit and no credit card required. Upgrade only when you need more listings or premium features.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </div>
       <Footer />
     </div>
