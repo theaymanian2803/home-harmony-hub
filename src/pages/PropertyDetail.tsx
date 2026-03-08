@@ -38,7 +38,6 @@ interface ExtendedProperty extends Property {
 export default function PropertyDetail() {
   const { id } = useParams();
   const { toast } = useToast();
-  const [liked, setLiked] = useState(false);
   const [property, setProperty] = useState<ExtendedProperty | null | undefined>(undefined);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
