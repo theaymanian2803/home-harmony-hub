@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Image,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Image, Lock, ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,10 @@ export default function SellerDashboard() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (atLimit) {
+      toast({ title: "Listing limit reached", description: "Upgrade to Seller Pro to add unlimited listings.", variant: "destructive" });
+      return;
+    }
     toast({ title: "Listing Published!", description: "Your property is now live." });
     setTab("manage");
   };
