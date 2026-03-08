@@ -252,6 +252,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_property_saves_count: {
+        Args: { _user_id: string }
+        Returns: {
+          property_id: string
+          saves_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

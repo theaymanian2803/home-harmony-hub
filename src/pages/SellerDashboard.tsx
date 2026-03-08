@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard, PartyPopper, X,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard, PartyPopper, X, Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 
 type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
 interface PropertyRow { id: string; title: string; price: number; views: number; status: string; }
+interface SavesCount { property_id: string; saves_count: number; }
 
 export default function SellerDashboard() {
   const { toast } = useToast();
@@ -34,6 +35,7 @@ export default function SellerDashboard() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<PropertyFormData> | null>(null);
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(false);
+  const [savesData, setSavesData] = useState<SavesCount[]>([]);
 
   useEffect(() => {
     if (isSubscribed && details?.status === "active") {
@@ -49,6 +51,8 @@ export default function SellerDashboard() {
     const { data } = await supabase.from("properties").select("id, title, price, views, status").eq("user_id", user.id);
     setMyListings((data as PropertyRow[]) || []);
     setLoadingListings(false);
+    const { data: saves } = await supabase.rpc("get_property_saves_count", { _user_id: user.id });
+    setSavesData((saves as SavesCount[]) || []);
   };
 
   useEffect(() => { if (user) refreshListings(); }, [user]);
@@ -154,6 +158,7 @@ export default function SellerDashboard() {
               {[
                 { label: t("dashboard.activeListings"), value: myListings.length, icon: List },
                 { label: t("dashboard.totalViews"), value: myListings.reduce((s, p) => s + (p.views || 0), 0).toLocaleString(), icon: Eye },
+                { label: "Total Saves", value: savesData.reduce((s, d) => s + d.saves_count, 0).toLocaleString(), icon: Heart },
                 { label: t("dashboard.messages"), value: "—", icon: MessageSquare },
               ].map((stat) => (
                 <div key={stat.label} className="rounded-lg border border-border bg-card p-6">
@@ -164,7 +169,7 @@ export default function SellerDashboard() {
                 </div>
               ))}
             </div>
-            <DashboardAnalytics listings={myListings} />
+            <DashboardAnalytics listings={myListings} savesData={savesData} />
           </div>
         )}
 
