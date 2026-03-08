@@ -45,6 +45,46 @@ interface PropertyFormProps {
 export default function PropertyForm({ userId, initialData, onSubmit, submitLabel }: PropertyFormProps) {
   const [images, setImages] = useState<string[]>(initialData?.images || []);
   const [submitting, setSubmitting] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
+  const latRef = useRef<HTMLInputElement>(null);
+  const lngRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleGeocode = async () => {
+    if (!formRef.current) return;
+    const f = new FormData(formRef.current);
+    const street = (f.get("location") as string) || "";
+    const city = (f.get("city") as string) || "";
+    const state = (f.get("state") as string) || "";
+    const zip = (f.get("zip_code") as string) || "";
+
+    const query = [street, city, state, zip].filter(Boolean).join(", ");
+    if (!query.trim()) {
+      toast.error("Enter an address, city, or state first");
+      return;
+    }
+
+    setGeocoding(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`,
+        { headers: { "User-Agent": "EstateHub/1.0" } }
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        if (latRef.current) latRef.current.value = parseFloat(lat).toFixed(6);
+        if (lngRef.current) lngRef.current.value = parseFloat(lon).toFixed(6);
+        toast.success("Coordinates found and filled in!");
+      } else {
+        toast.error("No results found. Try a more specific address.");
+      }
+    } catch {
+      toast.error("Geocoding failed. Please try again.");
+    } finally {
+      setGeocoding(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
