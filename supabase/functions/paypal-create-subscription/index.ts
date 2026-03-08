@@ -29,12 +29,40 @@ async function getPayPalAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-// Ensure a PayPal product + plan exist (idempotent)
-async function ensurePlan(token: string): Promise<string> {
-  // Try to find existing plan by listing
-  const listRes = await fetch(`${PAYPAL_BASE}/v1/billing/plans?product_id=SELLER_PRO&page_size=1&total_required=true`, {
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-  });
+interface PlanConfig {
+  productId: string;
+  productName: string;
+  planName: string;
+  description: string;
+  price: string;
+}
+
+const PLAN_CONFIGS: Record<string, PlanConfig> = {
+  pro: {
+    productId: "SELLER_PRO",
+    productName: "Seller Pro Subscription",
+    planName: "Seller Pro Monthly",
+    description: "$10/month for up to 25 listings",
+    price: "10",
+  },
+  unlimited: {
+    productId: "SELLER_UNLIMITED",
+    productName: "Seller Unlimited Subscription",
+    planName: "Seller Unlimited Monthly",
+    description: "$90/month for unlimited listings",
+    price: "90",
+  },
+};
+
+async function ensurePlan(token: string, plan: string): Promise<string> {
+  const config = PLAN_CONFIGS[plan];
+  if (!config) throw new Error(`Unknown plan: ${plan}`);
+
+  // Try to find existing plan
+  const listRes = await fetch(
+    `${PAYPAL_BASE}/v1/billing/plans?product_id=${config.productId}&page_size=1&total_required=true`,
+    { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+  );
 
   if (listRes.ok) {
     const listData = await listRes.json();
@@ -49,18 +77,17 @@ async function ensurePlan(token: string): Promise<string> {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
-      "PayPal-Request-Id": "SELLER_PRO_PRODUCT",
+      "PayPal-Request-Id": `${config.productId}_PRODUCT`,
     },
     body: JSON.stringify({
-      id: "SELLER_PRO",
-      name: "Seller Pro Subscription",
-      description: "Unlimited property listings, analytics & priority support",
+      id: config.productId,
+      name: config.productName,
+      description: config.description,
       type: "SERVICE",
       category: "SOFTWARE",
     }),
   });
 
-  // Product may already exist (409), that's fine
   if (!productRes.ok && productRes.status !== 409) {
     const err = await productRes.text();
     console.error("Product creation error:", err);
@@ -74,9 +101,9 @@ async function ensurePlan(token: string): Promise<string> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      product_id: "SELLER_PRO",
-      name: "Seller Pro Monthly",
-      description: "$10/month for unlimited listings",
+      product_id: config.productId,
+      name: config.planName,
+      description: config.description,
       billing_cycles: [
         {
           frequency: { interval_unit: "MONTH", interval_count: 1 },
@@ -84,7 +111,7 @@ async function ensurePlan(token: string): Promise<string> {
           sequence: 1,
           total_cycles: 0,
           pricing_scheme: {
-            fixed_price: { value: "10", currency_code: "USD" },
+            fixed_price: { value: config.price, currency_code: "USD" },
           },
         },
       ],
@@ -100,8 +127,8 @@ async function ensurePlan(token: string): Promise<string> {
     throw new Error(`Plan creation failed: ${err}`);
   }
 
-  const plan = await planRes.json();
-  return plan.id;
+  const planData = await planRes.json();
+  return planData.id;
 }
 
 Deno.serve(async (req) => {
@@ -110,7 +137,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verify user
     const authHeader = req.headers.get("Authorization");
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -125,10 +151,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { returnUrl, cancelUrl } = await req.json();
+    const { returnUrl, cancelUrl, plan = "pro" } = await req.json();
 
     const ppToken = await getPayPalAccessToken();
-    const planId = await ensurePlan(ppToken);
+    const planId = await ensurePlan(ppToken, plan);
 
     // Create subscription
     const subRes = await fetch(`${PAYPAL_BASE}/v1/billing/subscriptions`, {
@@ -139,7 +165,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         plan_id: planId,
-        custom_id: user.id,
+        custom_id: `${user.id}|${plan}`,
         application_context: {
           brand_name: "EstateHub",
           return_url: returnUrl,
@@ -162,7 +188,7 @@ Deno.serve(async (req) => {
       user_id: user.id,
       paypal_subscription_id: subscription.id,
       status: "pending",
-      plan: "pro",
+      plan: plan,
     }, { onConflict: "user_id" });
 
     return new Response(JSON.stringify({ approvalUrl: approvalLink, subscriptionId: subscription.id }), {

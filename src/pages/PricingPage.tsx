@@ -18,6 +18,15 @@ const freeTier = [
 ];
 
 const proTier = [
+  { text: "Up to 25 property listings", included: true },
+  { text: "High-resolution image gallery", included: true },
+  { text: "Lead generation contact forms", included: true },
+  { text: "Analytics & view tracking", included: true },
+  { text: "Featured listing boost", included: false },
+  { text: "Priority support", included: false },
+];
+
+const unlimitedTier = [
   { text: "Unlimited property listings", included: true },
   { text: "High-resolution image gallery", included: true },
   { text: "Lead generation contact forms", included: true },
@@ -29,8 +38,8 @@ const proTier = [
 export default function PricingPage() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const { isSubscribed, createSubscription, activateSubscription } = useSubscription();
-  const [subscribing, setSubscribing] = useState(false);
+  const { isSubscribed, details, createSubscription, activateSubscription } = useSubscription();
+  const [subscribing, setSubscribing] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
 
   // Handle PayPal return
@@ -42,7 +51,7 @@ export default function PricingPage() {
       localStorage.removeItem("pending_subscription_id");
       activateSubscription(subId).then((result) => {
         if (result.status === "active") {
-          toast({ title: "Subscription Active!", description: "Welcome to Seller Pro! 🎉" });
+          toast({ title: "Subscription Active!", description: "Welcome! 🎉" });
         } else {
           toast({ title: "Processing", description: "Your subscription is being processed." });
         }
@@ -55,15 +64,15 @@ export default function PricingPage() {
     }
   }, [searchParams]);
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (plan: "pro" | "unlimited") => {
     if (!user) {
       toast({ title: "Sign in required", description: "Please sign in to subscribe." });
       return;
     }
 
-    setSubscribing(true);
+    setSubscribing(plan);
     try {
-      const { approvalUrl, subscriptionId } = await createSubscription();
+      const { approvalUrl, subscriptionId } = await createSubscription(plan);
       if (approvalUrl) {
         localStorage.setItem("pending_subscription_id", subscriptionId);
         window.location.href = approvalUrl;
@@ -71,9 +80,11 @@ export default function PricingPage() {
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
-      setSubscribing(false);
+      setSubscribing(null);
     }
   };
+
+  const currentPlan = details?.plan || "free";
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,7 +100,7 @@ export default function PricingPage() {
           List up to 2 properties at no cost. Upgrade when you're ready to grow.
         </p>
 
-        <div className="mx-auto mt-12 grid max-w-3xl gap-6 md:grid-cols-2">
+        <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
           {/* Free */}
           <div className="rounded-2xl border border-border bg-card p-8 text-left">
             <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Free</p>
@@ -120,25 +131,71 @@ export default function PricingPage() {
           </div>
 
           {/* Pro */}
-          <div className="relative rounded-2xl border-2 border-accent bg-card p-8 text-left shadow-lg">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-xs font-semibold text-accent-foreground">
-              Most Popular
-            </div>
+          <div className="rounded-2xl border border-border bg-card p-8 text-left">
             <p className="text-sm font-semibold uppercase tracking-wider text-accent">Seller Pro</p>
             <div className="mt-4 flex items-baseline gap-1">
               <span className="font-display text-5xl font-bold text-foreground">$10</span>
               <span className="text-muted-foreground">/month</span>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">Cancel anytime. No hidden fees.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Great for growing sellers.</p>
             <ul className="mt-8 space-y-3">
               {proTier.map((f) => (
+                <li key={f.text} className="flex items-center gap-3 text-sm">
+                  {f.included ? (
+                    <Check className="h-4 w-4 shrink-0 text-accent" />
+                  ) : (
+                    <X className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+                  )}
+                  <span className={f.included ? "text-foreground" : "text-muted-foreground/50"}>
+                    {f.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {isSubscribed && currentPlan === "pro" ? (
+              <Button variant="outline" className="mt-8 w-full" asChild>
+                <Link to="/dashboard">Go to Dashboard ✓</Link>
+              </Button>
+            ) : isSubscribed && currentPlan === "unlimited" ? (
+              <Button variant="outline" className="mt-8 w-full" disabled>
+                Current plan is higher
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                className="mt-8 w-full gradient-caramel text-accent-foreground hover:opacity-90"
+                onClick={() => handleSubscribe("pro")}
+                disabled={subscribing !== null}
+              >
+                {subscribing === "pro" ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirecting…</>
+                ) : (
+                  <>Subscribe Now <ArrowRight className="ml-2 h-4 w-4" /></>
+                )}
+              </Button>
+            )}
+          </div>
+
+          {/* Unlimited */}
+          <div className="relative rounded-2xl border-2 border-accent bg-card p-8 text-left shadow-lg">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-xs font-semibold text-accent-foreground">
+              Most Popular
+            </div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-accent">Unlimited</p>
+            <div className="mt-4 flex items-baseline gap-1">
+              <span className="font-display text-5xl font-bold text-foreground">$90</span>
+              <span className="text-muted-foreground">/month</span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">Cancel anytime. No hidden fees.</p>
+            <ul className="mt-8 space-y-3">
+              {unlimitedTier.map((f) => (
                 <li key={f.text} className="flex items-center gap-3 text-sm text-foreground">
                   <Check className="h-4 w-4 shrink-0 text-accent" />
                   {f.text}
                 </li>
               ))}
             </ul>
-            {isSubscribed ? (
+            {isSubscribed && currentPlan === "unlimited" ? (
               <Button variant="outline" className="mt-8 w-full" asChild>
                 <Link to="/dashboard">Go to Dashboard ✓</Link>
               </Button>
@@ -146,11 +203,11 @@ export default function PricingPage() {
               <Button
                 size="lg"
                 className="mt-8 w-full gradient-caramel text-accent-foreground hover:opacity-90"
-                onClick={handleSubscribe}
-                disabled={subscribing}
+                onClick={() => handleSubscribe("unlimited")}
+                disabled={subscribing !== null}
               >
-                {subscribing ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirecting to PayPal…</>
+                {subscribing === "unlimited" ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirecting…</>
                 ) : (
                   <>Subscribe Now <ArrowRight className="ml-2 h-4 w-4" /></>
                 )}

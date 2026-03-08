@@ -2,11 +2,21 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
+export type PlanType = "free" | "pro" | "unlimited";
+
 export interface SubscriptionDetails {
   status: string;
-  plan: string;
+  plan: PlanType;
   currentPeriodEnd: string | null;
   currentPeriodStart: string | null;
+}
+
+export function getListingLimit(plan: PlanType): number {
+  switch (plan) {
+    case "unlimited": return Infinity;
+    case "pro": return 25;
+    default: return 2;
+  }
 }
 
 export function useSubscription() {
@@ -29,13 +39,13 @@ export function useSubscription() {
       .eq("user_id", user.id)
       .maybeSingle();
 
-    const active = data?.status === "active" && data?.plan === "pro";
+    const active = data?.status === "active" && (data?.plan === "pro" || data?.plan === "unlimited");
     setIsSubscribed(active);
     setDetails(
       data
         ? {
             status: data.status,
-            plan: data.plan,
+            plan: (data.plan as PlanType) || "free",
             currentPeriodStart: data.current_period_start,
             currentPeriodEnd: data.current_period_end,
           }
@@ -48,7 +58,7 @@ export function useSubscription() {
     fetchSub();
   }, [user]);
 
-  const createSubscription = async () => {
+  const createSubscription = async (plan: "pro" | "unlimited" = "pro") => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("Not authenticated");
 
@@ -62,6 +72,7 @@ export function useSubscription() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          plan,
           returnUrl: `${window.location.origin}/pricing?status=success`,
           cancelUrl: `${window.location.origin}/pricing?status=cancelled`,
         }),
