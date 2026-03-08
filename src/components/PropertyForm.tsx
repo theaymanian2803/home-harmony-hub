@@ -133,7 +133,7 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
   );
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 max-w-3xl space-y-2">
+    <form ref={formRef} onSubmit={handleSubmit} className="mt-8 max-w-3xl space-y-2">
       {/* Basic Info */}
       <SectionTitle>Basic Information</SectionTitle>
       <div>
