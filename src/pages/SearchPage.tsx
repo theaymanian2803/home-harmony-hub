@@ -96,6 +96,18 @@ export default function SearchPage() {
       prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a]
     );
 
+  const clearAllFilters = () => {
+    setPriceSort("none");
+    setMinPrice("");
+    setMaxPrice("");
+    setBeds(0);
+    setBaths(0);
+    setSelectedType("");
+    setSelectedAmenities([]);
+  };
+
+  const hasActiveFilters = priceSort !== "none" || minPrice || maxPrice || beds > 0 || baths > 0 || selectedType || selectedAmenities.length > 0;
+
   const FilterPanel = () => (
     <div className="space-y-6">
       <div>
@@ -215,6 +227,18 @@ export default function SearchPage() {
           ))}
         </div>
       </div>
+
+      {hasActiveFilters && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={clearAllFilters}
+          className="w-full mt-2 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+        >
+          <X className="mr-1 h-4 w-4" />
+          Clear All Filters
+        </Button>
+      )}
     </div>
   );
 
