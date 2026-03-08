@@ -301,8 +301,6 @@ export default function SellerDashboard() {
             )}
           </div>
         )}
-      </div>
-    )}
 
         {/* Subscription */}
         {tab === "subscription" && (
@@ -315,4 +313,5 @@ export default function SellerDashboard() {
       </div>
     </div>
   );
+}
 }
