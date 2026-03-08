@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard, PartyPopper, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +40,18 @@ export default function SellerDashboard() {
   const [loadingListings, setLoadingListings] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<PropertyFormData> | null>(null);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(false);
+
+  // Show welcome banner for new subscribers
+  useEffect(() => {
+    if (isSubscribed && details?.status === "active") {
+      const bannerKey = `seller_pro_welcome_shown_${user?.id}`;
+      if (!localStorage.getItem(bannerKey)) {
+        setShowWelcomeBanner(true);
+        localStorage.setItem(bannerKey, "true");
+      }
+    }
+  }, [isSubscribed, details, user?.id]);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -200,7 +212,27 @@ export default function SellerDashboard() {
           </div>
         )}
 
-        {/* Overview */}
+        {/* Welcome banner for new Pro subscribers */}
+        {showWelcomeBanner && (
+          <div className="mt-6 relative flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-2"><PartyPopper className="h-5 w-5 text-primary" /></div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Welcome to Seller Pro! 🎉</p>
+                <p className="text-xs text-muted-foreground">You now have unlimited listings, advanced analytics, and priority support. Start creating!</p>
+              </div>
+            </div>
+            <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/5" onClick={() => setTab("create")}>
+              Create a Listing <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+            <button
+              onClick={() => setShowWelcomeBanner(false)}
+              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
         {tab === "overview" && (
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             {[
