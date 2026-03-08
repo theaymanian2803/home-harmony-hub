@@ -33,7 +33,7 @@ export default function SearchPage() {
     setSelectedType(t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : "");
   }, [searchParams]);
 
-
+  useEffect(() => {
     const fetchDbProperties = async () => {
       const { data } = await supabase
         .from("properties")
