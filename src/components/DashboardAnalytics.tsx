@@ -91,7 +91,7 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Views & Saves by Property */}
         <div className="rounded-xl border border-border bg-card p-5">
-          <h4 className="font-display text-xl font-bold text-foreground mb-4">Views by Property</h4>
+          <h4 className="font-display text-xl font-bold text-foreground mb-4">Views & Saves by Property</h4>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={viewsData}>
               <XAxis dataKey="name" tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} angle={-20} textAnchor="end" height={60} />
@@ -104,7 +104,8 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
                   fontSize: "0.8rem",
                 }}
               />
-              <Bar dataKey="views" fill="hsl(25, 65%, 45%)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="views" fill="hsl(25, 65%, 45%)" radius={[6, 6, 0, 0]} name="Views" />
+              <Bar dataKey="saves" fill="hsl(35, 80%, 55%)" radius={[6, 6, 0, 0]} name="Saves" />
             </BarChart>
           </ResponsiveContainer>
         </div>
