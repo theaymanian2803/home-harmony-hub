@@ -392,8 +392,8 @@ export default function UserProfile() {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>Listing limit: {listingLimit === Infinity ? "Unlimited" : listingLimit}</p>
                 <p>Listings used: {myListings.length}</p>
-                {details?.current_period_end && (
-                  <p>Next billing: {new Date(details.current_period_end).toLocaleDateString()}</p>
+                {details?.currentPeriodEnd && (
+                  <p>Next billing: {new Date(details.currentPeriodEnd).toLocaleDateString()}</p>
                 )}
               </div>
               <div className="mt-6 flex gap-3">
