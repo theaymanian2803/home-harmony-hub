@@ -91,7 +91,7 @@ export default function SellerDashboard() {
   const handleEdit = async (id: string) => {
     const { data } = await supabase
       .from("properties")
-      .select("title, description, price, beds, baths, city, state, amenities, images")
+      .select("*")
       .eq("id", id)
       .single();
 
