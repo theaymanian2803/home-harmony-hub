@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Image, Lock, ArrowRight,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight,
 } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +39,7 @@ export default function SellerDashboard() {
   const [tab, setTab] = useState<Tab>("overview");
   const [myListings, setMyListings] = useState<PropertyRow[]>([]);
   const [loadingListings, setLoadingListings] = useState(true);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -83,6 +85,7 @@ export default function SellerDashboard() {
       city: form.get("city") as string,
       state: form.get("state") as string,
       amenities: (form.get("amenities") as string)?.split(",").map((s) => s.trim()).filter(Boolean) || [],
+      images: uploadedImages,
     });
 
     if (error) {
@@ -92,6 +95,7 @@ export default function SellerDashboard() {
       // Refresh listings
       const { data } = await supabase.from("properties").select("id, title, price, views, status").eq("user_id", user.id);
       setMyListings((data as PropertyRow[]) || []);
+      setUploadedImages([]);
       setTab("manage");
     }
   };
@@ -204,12 +208,12 @@ export default function SellerDashboard() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">Images</label>
-              <div className="flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-accent">
-                <div className="text-center">
-                  <Image className="mx-auto h-8 w-8" />
-                  <p className="mt-1 text-sm">Drag & drop or click to upload</p>
-                </div>
-              </div>
+              <ImageUpload
+                userId={user.id}
+                images={uploadedImages}
+                onImagesChange={setUploadedImages}
+                maxImages={10}
+              />
             </div>
             <Button type="submit" className="bg-accent text-accent-foreground hover:bg-emerald-light">
               Publish Listing
