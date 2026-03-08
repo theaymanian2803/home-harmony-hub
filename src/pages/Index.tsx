@@ -17,17 +17,17 @@ const stats = [
 
 export default function Index() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
 
-      {/* Stats */}
-      <section className="relative -mt-12 z-20">
+      {/* Stats – neumorphic bar */}
+      <section className="relative -mt-14 z-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 gap-4 rounded-2xl bg-card p-6 shadow-xl border border-border/50 md:grid-cols-4 md:p-8">
-            {stats.map((s) => (
-              <div key={s.label} className="flex items-center gap-3 justify-center">
-                <div className="rounded-xl bg-accent/10 p-2.5">
+          <div className="grid grid-cols-2 gap-6 neu-card-lg p-8 md:grid-cols-4 md:p-10">
+            {stats.map((s, i) => (
+              <div key={s.label} className="flex items-center gap-4 justify-center">
+                <div className="neu-pressed rounded-xl p-3">
                   <s.icon className="h-5 w-5 text-accent" />
                 </div>
                 <div>
