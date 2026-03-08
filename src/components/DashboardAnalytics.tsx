@@ -9,8 +9,14 @@ interface PropertyRow {
   status: string;
 }
 
+interface SavesCount {
+  property_id: string;
+  saves_count: number;
+}
+
 interface Props {
   listings: PropertyRow[];
+  savesData?: SavesCount[];
 }
 
 const COLORS = [
