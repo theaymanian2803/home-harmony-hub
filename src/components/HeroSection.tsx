@@ -4,7 +4,7 @@ import { Search, MapPin, Home, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useListingOptions } from "@/hooks/useListingOptions";
-import heroBg from "@/assets/hero-bg.jpg";
+import heroBgDefault from "@/assets/hero-bg.jpg";
 
 export default function HeroSection() {
   const navigate = useNavigate();
