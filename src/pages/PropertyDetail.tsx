@@ -1,8 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import {
-  ArrowLeft, Bed, Bath, Maximize, MapPin, Heart, Share2, Calendar, Eye, User,
+  ArrowLeft, Bed, Bath, Maximize, MapPin, Heart, Share2, Calendar, Eye, User, ChevronLeft, ChevronRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,55 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ReviewSection from "@/components/ReviewSection";
-import { properties, reviews, formatPrice } from "@/data/mockData";
+import { properties as mockProperties, reviews, formatPrice, type Property } from "@/data/mockData";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function PropertyDetail() {
   const { id } = useParams();
   const { toast } = useToast();
-  const property = properties.find((p) => p.id === id);
   const [liked, setLiked] = useState(false);
+  const [property, setProperty] = useState<Property | null | undefined>(undefined);
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      // Try database first
+      const { data } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("id", id!)
+        .single();
+
+      if (data) {
+        setProperty({
+          id: data.id,
+          title: data.title,
+          description: data.description || "",
+          price: data.price,
+          location: data.location || "",
+          city: data.city || "",
+          state: data.state || "",
+          beds: data.beds || 0,
+          baths: data.baths || 0,
+          sqft: data.sqft || 0,
+          type: (data.type as Property["type"]) || "House",
+          amenities: data.amenities || [],
+          images: data.images && data.images.length > 0 ? data.images : ["/placeholder.svg"],
+          featured: data.featured || false,
+          sellerId: data.user_id,
+          sellerName: "Property Owner",
+          createdAt: new Date(data.created_at).toLocaleDateString(),
+          views: data.views || 0,
+        });
+      } else {
+        // Fallback to mock data
+        setProperty(mockProperties.find((p) => p.id === id) || null);
+      }
+    };
+    if (id) fetchProperty();
+  }, [id]);
+
+  if (property === undefined) return null;
 
   if (!property) {
     return (
@@ -33,6 +75,7 @@ export default function PropertyDetail() {
   }
 
   const propertyReviews = reviews.filter((r) => r.propertyId === property.id);
+  const hasMultipleImages = property.images.length > 1;
 
   const handleContact = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,14 +90,56 @@ export default function PropertyDetail() {
           <ArrowLeft className="h-4 w-4" /> Back to search
         </Link>
 
-        {/* Image */}
-        <div className="mt-2 overflow-hidden rounded-xl">
+        {/* Image gallery */}
+        <div className="relative mt-2 overflow-hidden rounded-xl">
           <img
-            src={property.images[0]}
+            src={property.images[currentImage]}
             alt={property.title}
             className="aspect-[16/7] w-full object-cover"
           />
+          {hasMultipleImages && (
+            <>
+              <button
+                onClick={() => setCurrentImage((prev) => (prev === 0 ? property.images.length - 1 : prev - 1))}
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-card/80 p-2 backdrop-blur-sm transition-colors hover:bg-card"
+              >
+                <ChevronLeft className="h-5 w-5 text-foreground" />
+              </button>
+              <button
+                onClick={() => setCurrentImage((prev) => (prev === property.images.length - 1 ? 0 : prev + 1))}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-card/80 p-2 backdrop-blur-sm transition-colors hover:bg-card"
+              >
+                <ChevronRight className="h-5 w-5 text-foreground" />
+              </button>
+              <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+                {property.images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentImage(i)}
+                    className={`h-2 w-2 rounded-full transition-colors ${i === currentImage ? "bg-accent" : "bg-card/60"}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
+
+        {/* Thumbnails */}
+        {hasMultipleImages && (
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            {property.images.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentImage(i)}
+                className={`h-16 w-24 flex-shrink-0 overflow-hidden rounded-md border-2 transition-colors ${
+                  i === currentImage ? "border-accent" : "border-transparent opacity-70 hover:opacity-100"
+                }`}
+              >
+                <img src={img} alt={`View ${i + 1}`} className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="mt-8 grid gap-8 lg:grid-cols-3">
           {/* Main */}
@@ -113,7 +198,6 @@ export default function PropertyDetail() {
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
-              {/* Seller card */}
               <div className="rounded-lg border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10">
@@ -126,7 +210,6 @@ export default function PropertyDetail() {
                 </div>
               </div>
 
-              {/* Contact form */}
               <div className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-display text-lg font-semibold text-foreground">Contact Seller</h3>
                 <form onSubmit={handleContact} className="mt-4 space-y-3">

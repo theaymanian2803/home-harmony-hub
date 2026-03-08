@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { SlidersHorizontal, X, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -6,7 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
-import { properties } from "@/data/mockData";
+import { properties as mockProperties, type Property } from "@/data/mockData";
+import { supabase } from "@/integrations/supabase/client";
 
 const allAmenities = ["Pool", "Garden", "Garage", "Fireplace", "Smart Home", "Terrace", "Gym", "Concierge"];
 
@@ -17,9 +18,47 @@ export default function SearchPage() {
   const [baths, setBaths] = useState(0);
   const [selectedType, setSelectedType] = useState("");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [allProperties, setAllProperties] = useState<Property[]>(mockProperties);
+
+  useEffect(() => {
+    const fetchDbProperties = async () => {
+      const { data } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("status", "active");
+
+      if (data && data.length > 0) {
+        const dbProps: Property[] = data.map((d) => ({
+          id: d.id,
+          title: d.title,
+          description: d.description || "",
+          price: d.price,
+          location: d.location || "",
+          city: d.city || "",
+          state: d.state || "",
+          beds: d.beds || 0,
+          baths: d.baths || 0,
+          sqft: d.sqft || 0,
+          type: (d.type as Property["type"]) || "House",
+          amenities: d.amenities || [],
+          images: d.images && d.images.length > 0 ? d.images : ["/placeholder.svg"],
+          featured: d.featured || false,
+          sellerId: d.user_id,
+          sellerName: "Owner",
+          createdAt: new Date(d.created_at).toLocaleDateString(),
+          views: d.views || 0,
+        }));
+        // Merge: db properties + mock properties (avoid duplicates by id)
+        const dbIds = new Set(dbProps.map((p) => p.id));
+        const combined = [...dbProps, ...mockProperties.filter((p) => !dbIds.has(p.id))];
+        setAllProperties(combined);
+      }
+    };
+    fetchDbProperties();
+  }, []);
 
   const filtered = useMemo(() => {
-    return properties.filter((p) => {
+    return allProperties.filter((p) => {
       if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
       if (beds > 0 && p.beds < beds) return false;
       if (baths > 0 && p.baths < baths) return false;
@@ -27,7 +66,7 @@ export default function SearchPage() {
       if (selectedAmenities.length > 0 && !selectedAmenities.every((a) => p.amenities.includes(a))) return false;
       return true;
     });
-  }, [priceRange, beds, baths, selectedType, selectedAmenities]);
+  }, [allProperties, priceRange, beds, baths, selectedType, selectedAmenities]);
 
   const toggleAmenity = (a: string) =>
     setSelectedAmenities((prev) =>
@@ -152,7 +191,6 @@ export default function SearchPage() {
         </div>
 
         <div className="flex gap-8">
-          {/* Desktop sidebar */}
           <aside className="hidden w-64 shrink-0 md:block">
             <div className="sticky top-24 rounded-lg border border-border bg-card p-5">
               <h3 className="mb-4 font-display text-lg font-semibold text-foreground">Filters</h3>
@@ -160,7 +198,6 @@ export default function SearchPage() {
             </div>
           </aside>
 
-          {/* Mobile filters */}
           {filtersOpen && (
             <div className="fixed inset-0 z-50 bg-foreground/50 md:hidden" onClick={() => setFiltersOpen(false)}>
               <div
@@ -178,7 +215,6 @@ export default function SearchPage() {
             </div>
           )}
 
-          {/* Grid */}
           <div className="flex-1">
             {filtered.length === 0 ? (
               <div className="py-20 text-center text-muted-foreground">
