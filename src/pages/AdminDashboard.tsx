@@ -209,6 +209,8 @@ export default function AdminDashboard() {
         {tab === "add-property" && user && <PropertyForm userId={user.id} onSubmit={handleCreateProperty} submitLabel={t("admin.publishProperty")} />}
 
         {tab === "listing-controls" && <AdminListingControls />}
+
+        {tab === "landing-page" && <AdminLandingControls />}
       </div>
     </div>
   );
