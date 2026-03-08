@@ -204,9 +204,94 @@ export default function AdminLandingControls() {
 
         {/* Hero */}
         {subTab === "hero" && (
-          <div className="max-w-2xl">
-            <h3 className="font-medium text-foreground mb-4">Hero Section Content</h3>
-            {renderContentFields("hero")}
+          <div className="max-w-2xl space-y-8">
+            {/* Background Image */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Hero Background Image</h3>
+              <div className="rounded-lg border border-border bg-secondary/30 p-4">
+                {getValue("hero_bg_image") ? (
+                  <div className="mb-4">
+                    <div className="relative rounded-lg overflow-hidden border border-border">
+                      <img
+                        src={getValue("hero_bg_image")}
+                        alt="Hero background preview"
+                        className="w-full h-48 object-cover"
+                      />
+                      <button
+                        onClick={handleRemoveBgImage}
+                        className="absolute top-2 right-2 rounded-full bg-destructive p-1.5 text-destructive-foreground hover:opacity-90 transition-opacity"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground truncate">{getValue("hero_bg_image")}</p>
+                  </div>
+                ) : (
+                  <div className="mb-4 flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30">
+                    <div className="text-center">
+                      <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground/50" />
+                      <p className="mt-1 text-xs text-muted-foreground">No background image set (using default)</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">Upload Image</p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {uploadingImage ? "Uploading…" : "Choose File"}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs text-muted-foreground">OR</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">External Image URL</p>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://example.com/image.jpg"
+                        value={imageUrlInput}
+                        onChange={(e) => setImageUrlInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleSetExternalUrl(); }}
+                        className="text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSetExternalUrl}
+                        disabled={!imageUrlInput.trim()}
+                        className="shrink-0"
+                      >
+                        <LinkIcon className="mr-1 h-4 w-4" /> Set URL
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Text Content */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Hero Section Content</h3>
+              {renderContentFields("hero")}
+            </div>
           </div>
         )}
 
