@@ -7,16 +7,16 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
 import { Shield, TrendingUp, Users, Home } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export default function Index() {
-  const { t } = useTranslation();
+  const { getValue, loading } = useSiteContent();
 
   const stats = [
-    { icon: Users, label: t("stats.activeBuyers"), value: "25,000+" },
-    { icon: Home, label: t("stats.propertiesListed"), value: "4,800+" },
-    { icon: Shield, label: t("stats.trustedSellers"), value: "1,200+" },
-    { icon: TrendingUp, label: t("stats.successfulSales"), value: "3,400+" },
+    { icon: Users, label: getValue("stat_active_buyers_label", "Active Buyers"), value: getValue("stat_active_buyers_value", "25,000+") },
+    { icon: Home, label: getValue("stat_properties_listed_label", "Properties Listed"), value: getValue("stat_properties_listed_value", "4,800+") },
+    { icon: Shield, label: getValue("stat_trusted_sellers_label", "Trusted Sellers"), value: getValue("stat_trusted_sellers_value", "1,200+") },
+    { icon: TrendingUp, label: getValue("stat_successful_sales_label", "Successful Sales"), value: getValue("stat_successful_sales_value", "3,400+") },
   ];
 
   return (

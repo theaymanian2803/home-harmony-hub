@@ -217,6 +217,36 @@ export type Database = {
         }
         Relationships: []
       }
+      site_content: {
+        Row: {
+          id: string
+          key: string
+          label: string
+          section: string
+          sort_order: number
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          label?: string
+          section?: string
+          sort_order?: number
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          label?: string
+          section?: string
+          sort_order?: number
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
@@ -250,6 +280,42 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          avatar: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          quote: string
+          rating: number
+          role: string
+          sort_order: number
+        }
+        Insert: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          quote: string
+          rating?: number
+          role?: string
+          sort_order?: number
+        }
+        Update: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          quote?: string
+          rating?: number
+          role?: string
+          sort_order?: number
         }
         Relationships: []
       }

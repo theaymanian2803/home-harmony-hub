@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export default function CtaSection() {
-  const { t } = useTranslation();
+  const { getValue } = useSiteContent();
 
   const benefits = [
-    t("cta.benefit1"),
-    t("cta.benefit2"),
-    t("cta.benefit3"),
-    t("cta.benefit4"),
+    "No hidden fees",
+    "Cancel anytime",
+    "24/7 Support",
+    "Verified listings",
   ];
 
   return (
@@ -26,13 +26,13 @@ export default function CtaSection() {
 
           <div className="relative z-10">
             <h2 className="font-display text-3xl font-bold text-primary-foreground md:text-5xl">
-              {t("cta.titleLine1")}
+              {getValue("cta_title_line1", "Ready to Find Your")}
               <span className="block mt-2" style={{ background: "linear-gradient(135deg, hsl(25 55% 58%), hsl(35 80% 55%))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                {t("cta.titleLine2")}
+                {getValue("cta_title_line2", "Perfect Property?")}
               </span>
             </h2>
             <p className="mx-auto mt-5 max-w-lg text-primary-foreground/50 md:text-lg">
-              {t("cta.subtitle")}
+              {getValue("cta_subtitle", "Join thousands of satisfied buyers and sellers.")}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
@@ -46,11 +46,11 @@ export default function CtaSection() {
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button size="lg" className="gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl px-10 text-base shadow-lg" asChild>
                 <Link to="/pricing">
-                  {t("cta.viewPlans")} <ArrowRight className="ml-2 h-4 w-4" />
+                  View Plans <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="border-caramel/40 bg-transparent text-caramel hover:bg-caramel hover:text-accent-foreground rounded-xl px-10" asChild>
-                <Link to="/auth">{t("cta.createFreeAccount")}</Link>
+                <Link to="/auth">Create Free Account</Link>
               </Button>
             </div>
           </div>

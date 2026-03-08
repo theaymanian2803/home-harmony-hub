@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LayoutDashboard, Users, Home, Plus, Trash2, Shield, Eye, CheckCircle, XCircle, Clock, Settings2 } from "lucide-react";
+import { LayoutDashboard, Users, Home, Plus, Trash2, Shield, Eye, CheckCircle, XCircle, Clock, Settings2, Layout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,9 +12,10 @@ import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
 import PropertyForm from "@/components/PropertyForm";
 import AdminListingControls from "@/components/AdminListingControls";
+import AdminLandingControls from "@/components/AdminLandingControls";
 import { useTranslation } from "react-i18next";
 
-type Tab = "overview" | "properties" | "pending" | "users" | "add-property" | "listing-controls";
+type Tab = "overview" | "properties" | "pending" | "users" | "add-property" | "listing-controls" | "landing-page";
 interface PropertyRow { id: string; title: string; price: number; views: number; status: string; user_id: string; city: string; state: string; }
 interface ProfileRow { id: string; email: string; full_name: string; created_at: string; }
 
@@ -91,6 +92,7 @@ export default function AdminDashboard() {
     { id: "users", label: t("admin.users"), icon: Users },
     { id: "add-property", label: t("admin.addProperty"), icon: Plus },
     { id: "listing-controls", label: "Listing Controls", icon: Settings2 },
+    { id: "landing-page", label: "Landing Page", icon: Layout },
   ];
 
   if (authLoading || adminLoading || !isAdmin) return null;
@@ -207,6 +209,8 @@ export default function AdminDashboard() {
         {tab === "add-property" && user && <PropertyForm userId={user.id} onSubmit={handleCreateProperty} submitLabel={t("admin.publishProperty")} />}
 
         {tab === "listing-controls" && <AdminListingControls />}
+
+        {tab === "landing-page" && <AdminLandingControls />}
       </div>
     </div>
   );
