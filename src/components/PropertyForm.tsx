@@ -49,6 +49,8 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
   const [images, setImages] = useState<string[]>(initialData?.images || []);
   const [submitting, setSubmitting] = useState(false);
   const [geocoding, setGeocoding] = useState(false);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(initialData?.amenities || []);
+  const { getByCategory, loading: optionsLoading } = useListingOptions();
   const latRef = useRef<HTMLInputElement>(null);
   const lngRef = useRef<HTMLInputElement>(null);
   const cityRef = useRef<HTMLInputElement>(null);
