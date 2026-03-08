@@ -302,6 +302,17 @@ export default function SellerDashboard() {
           </div>
         )}
       </div>
+    )}
+
+        {/* Subscription */}
+        {tab === "subscription" && (
+          <SubscriptionManagement
+            isSubscribed={isSubscribed}
+            details={details}
+            onCancel={cancelSubscription}
+          />
+        )}
+      </div>
     </div>
   );
 }
