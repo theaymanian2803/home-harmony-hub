@@ -252,6 +252,10 @@ export default function SearchPage() {
           Clear All Filters
         </Button>
       )}
+
+      <div className="border-t border-border pt-4">
+        <SavedSearches currentFilters={currentFilters} onApply={applyFilters} />
+      </div>
     </div>
   );
 
