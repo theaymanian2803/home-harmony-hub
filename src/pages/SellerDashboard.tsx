@@ -158,6 +158,7 @@ export default function SellerDashboard() {
               {[
                 { label: t("dashboard.activeListings"), value: myListings.length, icon: List },
                 { label: t("dashboard.totalViews"), value: myListings.reduce((s, p) => s + (p.views || 0), 0).toLocaleString(), icon: Eye },
+                { label: "Total Saves", value: savesData.reduce((s, d) => s + d.saves_count, 0).toLocaleString(), icon: Heart },
                 { label: t("dashboard.messages"), value: "—", icon: MessageSquare },
               ].map((stat) => (
                 <div key={stat.label} className="rounded-lg border border-border bg-card p-6">
@@ -168,7 +169,7 @@ export default function SellerDashboard() {
                 </div>
               ))}
             </div>
-            <DashboardAnalytics listings={myListings} />
+            <DashboardAnalytics listings={myListings} savesData={savesData} />
           </div>
         )}
 
