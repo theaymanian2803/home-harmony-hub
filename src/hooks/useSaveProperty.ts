@@ -37,7 +37,7 @@ export function useSaveProperty(propertyId: string) {
     } finally {
       setLoading(false);
     }
-  }, [user, propertyId, saved, loading]);
+  }, [user, propertyId, saved, loading, isValidUuid]);
 
   return { saved, toggle, isLoggedIn: !!user };
 }
