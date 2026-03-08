@@ -16,6 +16,7 @@ const allAmenities = ["Pool", "Garden", "Garage", "Fireplace", "Smart Home", "Te
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "map" | "split">("grid");
   const [priceSort, setPriceSort] = useState<"none" | "asc" | "desc">("none");
   const [minPrice, setMinPrice] = useState("");
