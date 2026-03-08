@@ -109,6 +109,18 @@ export default function SearchPage() {
 
   const hasActiveFilters = priceSort !== "none" || minPrice || maxPrice || beds > 0 || baths > 0 || selectedType || selectedAmenities.length > 0;
 
+  const currentFilters: SearchFilters = { priceSort, minPrice, maxPrice, beds, baths, selectedType, selectedAmenities };
+
+  const applyFilters = useCallback((f: SearchFilters) => {
+    setPriceSort(f.priceSort);
+    setMinPrice(f.minPrice);
+    setMaxPrice(f.maxPrice);
+    setBeds(f.beds);
+    setBaths(f.baths);
+    setSelectedType(f.selectedType);
+    setSelectedAmenities(f.selectedAmenities);
+  }, []);
+
   const FilterPanel = () => (
     <div className="space-y-6">
       <div>
