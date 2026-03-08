@@ -15,6 +15,7 @@ import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
 import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 import SubscriptionManagement from "@/components/SubscriptionManagement";
+import DashboardAnalytics from "@/components/DashboardAnalytics";
 import { useTranslation } from "react-i18next";
 
 type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
