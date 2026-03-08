@@ -253,9 +253,18 @@ export default function SellerDashboard() {
                       <TableCell>{formatPrice(p.price)}</TableCell>
                       <TableCell>{(p.views || 0).toLocaleString()}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary" className="bg-accent/10 text-accent">
-                          {p.status === "active" ? "Active" : p.status}
-                        </Badge>
+                        {p.status === "active" && (
+                          <Badge variant="secondary" className="bg-accent/10 text-accent">Active</Badge>
+                        )}
+                        {p.status === "pending" && (
+                          <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600">Pending</Badge>
+                        )}
+                        {p.status === "rejected" && (
+                          <Badge variant="secondary" className="bg-destructive/10 text-destructive">Rejected</Badge>
+                        )}
+                        {!["active", "pending", "rejected"].includes(p.status) && (
+                          <Badge variant="secondary">{p.status}</Badge>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
