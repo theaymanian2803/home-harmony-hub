@@ -42,19 +42,6 @@ export default function DashboardAnalytics({ listings }: Props) {
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   }, [listings]);
 
-  const priceDistribution = useMemo(() => {
-    const ranges = [
-      { label: "< $200K", min: 0, max: 200000 },
-      { label: "$200K-$400K", min: 200000, max: 400000 },
-      { label: "$400K-$600K", min: 400000, max: 600000 },
-      { label: "$600K-$1M", min: 600000, max: 1000000 },
-      { label: "$1M+", min: 1000000, max: Infinity },
-    ];
-    return ranges.map((r) => ({
-      range: r.label,
-      count: listings.filter((l) => l.price >= r.min && l.price < r.max).length,
-    }));
-  }, [listings]);
 
   const totalViews = listings.reduce((s, l) => s + (l.views || 0), 0);
   const avgPrice = listings.length
