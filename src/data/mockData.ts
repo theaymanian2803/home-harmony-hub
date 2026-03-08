@@ -129,7 +129,7 @@ export const properties: Property[] = [
     sqft: 3400,
     type: "Villa",
     amenities: ["Pool", "Terrace", "Garden", "Smart Home", "Solar"],
-    images: [property5],
+    images: [property5, property3, property6, property1],
     featured: true,
     sellerId: "s2",
     sellerName: "Sarah Chen",
