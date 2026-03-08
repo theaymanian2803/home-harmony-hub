@@ -75,7 +75,10 @@ export default function SearchPage() {
   }, []);
 
   const filtered = useMemo(() => {
+    const min = minPrice ? Number(minPrice) : 0;
+    const max = maxPrice ? Number(maxPrice) : Infinity;
     const result = allProperties.filter((p) => {
+      if (p.price < min || p.price > max) return false;
       if (beds > 0 && p.beds < beds) return false;
       if (baths > 0 && p.baths < baths) return false;
       if (selectedType && p.type !== selectedType) return false;
@@ -85,7 +88,7 @@ export default function SearchPage() {
     if (priceSort === "asc") result.sort((a, b) => a.price - b.price);
     if (priceSort === "desc") result.sort((a, b) => b.price - a.price);
     return result;
-  }, [allProperties, priceSort, beds, baths, selectedType, selectedAmenities]);
+  }, [allProperties, priceSort, minPrice, maxPrice, beds, baths, selectedType, selectedAmenities]);
 
   const toggleAmenity = (a: string) =>
     setSelectedAmenities((prev) =>
