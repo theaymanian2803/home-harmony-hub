@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone } from "lucide-react";
+import { useState, useRef } from "react";
+import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone, Upload, Link as LinkIcon, ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,10 +12,13 @@ type SubTab = "hero" | "stats" | "sections" | "testimonials";
 
 export default function AdminLandingControls() {
   const { toast } = useToast();
-  const { content, testimonials, getBySection, refetch } = useSiteContent();
+  const { content, testimonials, getBySection, getValue, refetch } = useSiteContent();
   const [subTab, setSubTab] = useState<SubTab>("hero");
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageUrlInput, setImageUrlInput] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Testimonial form
   const [newTestimonial, setNewTestimonial] = useState({ name: "", role: "", quote: "", rating: 5, avatar: "" });
@@ -61,6 +64,47 @@ export default function AdminLandingControls() {
       await refetch();
     }
     setSaving(false);
+  };
+
+  const saveHeroBgImage = async (url: string) => {
+    const { error } = await supabase
+      .from("site_content")
+      .update({ value: url, updated_at: new Date().toISOString() } as any)
+      .eq("key", "hero_bg_image");
+    if (error) toast({ title: "Error saving image", variant: "destructive" });
+    else { toast({ title: "Background image updated" }); await refetch(); }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+    setUploadingImage(true);
+    const ext = file.name.split(".").pop();
+    const path = `hero-bg-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } else {
+      const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
+      await saveHeroBgImage(urlData.publicUrl);
+    }
+    setUploadingImage(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleSetExternalUrl = async () => {
+    const url = imageUrlInput.trim();
+    if (!url) return;
+    await saveHeroBgImage(url);
+    setImageUrlInput("");
+  };
+
+  const handleRemoveBgImage = async () => {
+    await saveHeroBgImage("");
   };
 
   const handleAddTestimonial = async () => {
@@ -160,9 +204,94 @@ export default function AdminLandingControls() {
 
         {/* Hero */}
         {subTab === "hero" && (
-          <div className="max-w-2xl">
-            <h3 className="font-medium text-foreground mb-4">Hero Section Content</h3>
-            {renderContentFields("hero")}
+          <div className="max-w-2xl space-y-8">
+            {/* Background Image */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Hero Background Image</h3>
+              <div className="rounded-lg border border-border bg-secondary/30 p-4">
+                {getValue("hero_bg_image") ? (
+                  <div className="mb-4">
+                    <div className="relative rounded-lg overflow-hidden border border-border">
+                      <img
+                        src={getValue("hero_bg_image")}
+                        alt="Hero background preview"
+                        className="w-full h-48 object-cover"
+                      />
+                      <button
+                        onClick={handleRemoveBgImage}
+                        className="absolute top-2 right-2 rounded-full bg-destructive p-1.5 text-destructive-foreground hover:opacity-90 transition-opacity"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground truncate">{getValue("hero_bg_image")}</p>
+                  </div>
+                ) : (
+                  <div className="mb-4 flex h-32 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30">
+                    <div className="text-center">
+                      <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground/50" />
+                      <p className="mt-1 text-xs text-muted-foreground">No background image set (using default)</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">Upload Image</p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {uploadingImage ? "Uploading…" : "Choose File"}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs text-muted-foreground">OR</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">External Image URL</p>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://example.com/image.jpg"
+                        value={imageUrlInput}
+                        onChange={(e) => setImageUrlInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleSetExternalUrl(); }}
+                        className="text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSetExternalUrl}
+                        disabled={!imageUrlInput.trim()}
+                        className="shrink-0"
+                      >
+                        <LinkIcon className="mr-1 h-4 w-4" /> Set URL
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Text Content */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Hero Section Content</h3>
+              {renderContentFields("hero")}
+            </div>
           </div>
         )}
 

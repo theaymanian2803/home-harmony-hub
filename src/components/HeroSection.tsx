@@ -4,7 +4,7 @@ import { Search, MapPin, Home, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useListingOptions } from "@/hooks/useListingOptions";
-import heroBg from "@/assets/hero-bg.jpg";
+import heroBgDefault from "@/assets/hero-bg.jpg";
 
 export default function HeroSection() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function HeroSection() {
   const { getByCategory } = useListingOptions();
 
   const propertyTypes = getByCategory("property_type");
-
+  const heroBg = getValue("hero_bg_image") || heroBgDefault;
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
       <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${heroBg})` }} />
