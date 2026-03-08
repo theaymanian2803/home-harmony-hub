@@ -190,8 +190,11 @@ export default function PropertyDetail() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" onClick={() => { setLiked(!liked); toast({ title: liked ? "Removed from favorites" : "Added to Favorites" }); }}>
-                    <Heart className={`h-4 w-4 ${liked ? "fill-destructive text-destructive" : ""}`} />
+                  <Button variant="outline" size="icon" onClick={() => {
+                    if (!isLoggedIn) { window.location.href = "/auth"; return; }
+                    toggle().then((nowSaved) => { toast({ title: nowSaved ? "Saved to profile" : "Removed from saved" }); });
+                  }}>
+                    <Heart className={`h-4 w-4 ${saved ? "fill-destructive text-destructive" : ""}`} />
                   </Button>
                   <Button variant="outline" size="icon" onClick={() => toast({ title: "Link Copied!" })}>
                     <Share2 className="h-4 w-4" />
