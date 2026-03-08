@@ -45,6 +45,8 @@ export default function SearchPage() {
           amenities: d.amenities || [],
           images: d.images && d.images.length > 0 ? d.images : ["/placeholder.svg"],
           featured: d.featured || false,
+          latitude: d.latitude ?? undefined,
+          longitude: d.longitude ?? undefined,
           sellerId: d.user_id,
           sellerName: "Owner",
           createdAt: new Date(d.created_at).toLocaleDateString(),
