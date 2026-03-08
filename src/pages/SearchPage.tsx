@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { SlidersHorizontal, X, Map, LayoutGrid, Columns2 } from "lucide-react";
+import { SlidersHorizontal, X, Map, LayoutGrid, Columns2, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,6 +16,7 @@ const allAmenities = ["Pool", "Garden", "Garage", "Fireplace", "Smart Home", "Te
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "map" | "split">("grid");
   const [priceSort, setPriceSort] = useState<"none" | "asc" | "desc">("none");
   const [minPrice, setMinPrice] = useState("");
@@ -255,12 +256,32 @@ export default function SearchPage() {
         </div>
 
         <div className="flex gap-8">
-          <aside className="hidden w-80 min-w-[20rem] max-w-[20rem] shrink-0 md:block">
-            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card p-5">
-              <h3 className="mb-4 font-display text-lg font-semibold text-foreground">Filters</h3>
-              <FilterPanel />
-            </div>
-          </aside>
+          {sidebarOpen && (
+            <aside className="hidden w-80 min-w-[20rem] max-w-[20rem] shrink-0 transition-all duration-300 md:block">
+              <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card p-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="font-display text-lg font-semibold text-foreground">Filters</h3>
+                  <button
+                    onClick={() => setSidebarOpen(false)}
+                    className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    title="Hide filters"
+                  >
+                    <PanelLeftClose className="h-4 w-4" />
+                  </button>
+                </div>
+                <FilterPanel />
+              </div>
+            </aside>
+          )}
+          {!sidebarOpen && (
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="hidden md:flex sticky top-24 h-fit items-center gap-1 rounded-md border border-border bg-card px-2 py-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              title="Show filters"
+            >
+              <PanelLeftOpen className="h-4 w-4" />
+            </button>
+          )}
 
           {filtersOpen && (
             <div className="fixed inset-0 z-50 bg-foreground/50 md:hidden" onClick={() => setFiltersOpen(false)}>
