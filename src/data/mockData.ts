@@ -149,7 +149,7 @@ export const properties: Property[] = [
     sqft: 2200,
     type: "Townhouse",
     amenities: ["Garden", "Fireplace", "Basement", "Rooftop"],
-    images: [property6],
+    images: [property6, property2, property4],
     featured: false,
     sellerId: "s3",
     sellerName: "Emily Rodriguez",
