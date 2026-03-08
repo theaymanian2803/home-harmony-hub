@@ -212,7 +212,27 @@ export default function SellerDashboard() {
           </div>
         )}
 
-        {/* Overview */}
+        {/* Welcome banner for new Pro subscribers */}
+        {showWelcomeBanner && (
+          <div className="mt-6 relative flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-2"><PartyPopper className="h-5 w-5 text-primary" /></div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Welcome to Seller Pro! 🎉</p>
+                <p className="text-xs text-muted-foreground">You now have unlimited listings, advanced analytics, and priority support. Start creating!</p>
+              </div>
+            </div>
+            <Button size="sm" variant="outline" className="border-primary/30 text-primary hover:bg-primary/5" onClick={() => setTab("create")}>
+              Create a Listing <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+            <button
+              onClick={() => setShowWelcomeBanner(false)}
+              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
         {tab === "overview" && (
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             {[
