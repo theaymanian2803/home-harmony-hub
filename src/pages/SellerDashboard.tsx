@@ -208,12 +208,12 @@ export default function SellerDashboard() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-foreground">Images</label>
-              <div className="flex h-32 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-accent">
-                <div className="text-center">
-                  <Image className="mx-auto h-8 w-8" />
-                  <p className="mt-1 text-sm">Drag & drop or click to upload</p>
-                </div>
-              </div>
+              <ImageUpload
+                userId={user.id}
+                images={uploadedImages}
+                onImagesChange={setUploadedImages}
+                maxImages={10}
+              />
             </div>
             <Button type="submit" className="bg-accent text-accent-foreground hover:bg-emerald-light">
               Publish Listing
