@@ -259,6 +259,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_property_views: {
+        Args: { _property_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
