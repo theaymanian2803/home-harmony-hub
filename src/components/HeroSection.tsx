@@ -13,7 +13,7 @@ export default function HeroSection() {
   const { getByCategory } = useListingOptions();
 
   const propertyTypes = getByCategory("property_type");
-
+  const heroBg = getValue("hero_bg_image") || heroBgDefault;
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
       <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${heroBg})` }} />
