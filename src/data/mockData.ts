@@ -49,7 +49,7 @@ export const properties: Property[] = [
     sqft: 4200,
     type: "House",
     amenities: ["Pool", "Smart Home", "Garage", "Garden", "Fireplace"],
-    images: [property1],
+    images: [property1, property2, property3],
     featured: true,
     sellerId: "s1",
     sellerName: "James Morrison",
