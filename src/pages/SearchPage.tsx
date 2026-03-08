@@ -121,6 +121,29 @@ export default function SearchPage() {
       </div>
 
       <div>
+        <label className="mb-2 block text-sm font-semibold text-foreground">Price Range</label>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            placeholder="Min"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value.slice(0, 10))}
+            min={0}
+            className="h-9 text-sm"
+          />
+          <span className="text-muted-foreground">–</span>
+          <Input
+            type="number"
+            placeholder="Max"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value.slice(0, 10))}
+            min={0}
+            className="h-9 text-sm"
+          />
+        </div>
+      </div>
+
+      <div>
         <label className="mb-2 block text-sm font-semibold text-foreground">Bedrooms (min)</label>
         <div className="flex gap-2">
           {[0, 1, 2, 3, 4, 5].map((n) => (
