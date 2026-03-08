@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.paypal-activate-subscription]
 verify_jwt = false
+
+[functions.paypal-cancel-subscription]
+verify_jwt = false

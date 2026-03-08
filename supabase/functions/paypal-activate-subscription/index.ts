@@ -36,20 +36,36 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const token = authHeader?.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-    if (userError || !user) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = claimsData.claims.sub as string;
+
     const { subscriptionId } = await req.json();
+    if (!subscriptionId) {
+      return new Response(JSON.stringify({ error: "subscriptionId required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Verify subscription status with PayPal
     const ppToken = await getPayPalAccessToken();
@@ -61,26 +77,53 @@ Deno.serve(async (req) => {
 
     const subscription = await subRes.json();
 
+    // Verify the subscription belongs to this user via custom_id
+    const customParts = (subscription.custom_id || "").split("|");
+    const subUserId = customParts[0];
+    const plan = customParts.length > 1 ? customParts[1] : "pro";
+
+    if (subUserId !== userId) {
+      return new Response(JSON.stringify({ error: "Subscription does not belong to this user" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (subscription.status === "ACTIVE") {
-      // Extract plan from custom_id (format: "user_id|plan")
-      const customParts = (subscription.custom_id || "").split("|");
-      const plan = customParts.length > 1 ? customParts[1] : "pro";
-
+      // Use PayPal's billing info for accurate period dates
       const now = new Date();
-      const periodEnd = new Date(now);
-      periodEnd.setMonth(periodEnd.getMonth() + 1);
+      let periodEnd: Date;
 
-      await supabase.from("subscriptions").upsert({
-        user_id: user.id,
+      if (subscription.billing_info?.next_billing_time) {
+        periodEnd = new Date(subscription.billing_info.next_billing_time);
+      } else {
+        // Fallback: determine from plan name if annual
+        const isAnnual = plan.includes("annual") || 
+          (subscription.plan_id && subscription.billing_info?.cycle_executions?.some(
+            (c: any) => c.frequency?.interval_unit === "YEAR"
+          ));
+        periodEnd = new Date(now);
+        if (isAnnual) {
+          periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+        } else {
+          periodEnd.setMonth(periodEnd.getMonth() + 1);
+        }
+      }
+
+      // Use service role for DB write
+      const adminSupabase = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+      await adminSupabase.from("subscriptions").upsert({
+        user_id: userId,
         paypal_subscription_id: subscriptionId,
         status: "active",
-        plan: plan,
+        plan: plan.replace("_annual", ""), // store base plan name
         current_period_start: now.toISOString(),
         current_period_end: periodEnd.toISOString(),
         updated_at: now.toISOString(),
       }, { onConflict: "user_id" });
 
-      return new Response(JSON.stringify({ status: "active", plan }), {
+      return new Response(JSON.stringify({ status: "active", plan: plan.replace("_annual", "") }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
