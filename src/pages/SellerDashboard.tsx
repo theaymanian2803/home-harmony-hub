@@ -15,6 +15,7 @@ import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
 import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 import SubscriptionManagement from "@/components/SubscriptionManagement";
+import DashboardAnalytics from "@/components/DashboardAnalytics";
 import { useTranslation } from "react-i18next";
 
 type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
@@ -148,19 +149,22 @@ export default function SellerDashboard() {
         )}
 
         {tab === "overview" && (
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {[
-              { label: t("dashboard.activeListings"), value: myListings.length, icon: List },
-              { label: t("dashboard.totalViews"), value: myListings.reduce((s, p) => s + (p.views || 0), 0).toLocaleString(), icon: Eye },
-              { label: t("dashboard.messages"), value: "—", icon: MessageSquare },
-            ].map((stat) => (
-              <div key={stat.label} className="rounded-lg border border-border bg-card p-6">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-accent/10 p-2"><stat.icon className="h-5 w-5 text-accent" /></div>
-                  <div><p className="text-2xl font-bold text-foreground font-display">{stat.value}</p><p className="text-sm text-muted-foreground">{stat.label}</p></div>
+          <div>
+            <div className="mt-8 grid gap-6 sm:grid-cols-3">
+              {[
+                { label: t("dashboard.activeListings"), value: myListings.length, icon: List },
+                { label: t("dashboard.totalViews"), value: myListings.reduce((s, p) => s + (p.views || 0), 0).toLocaleString(), icon: Eye },
+                { label: t("dashboard.messages"), value: "—", icon: MessageSquare },
+              ].map((stat) => (
+                <div key={stat.label} className="rounded-lg border border-border bg-card p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-accent/10 p-2"><stat.icon className="h-5 w-5 text-accent" /></div>
+                    <div><p className="text-2xl font-bold text-foreground font-display">{stat.value}</p><p className="text-sm text-muted-foreground">{stat.label}</p></div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <DashboardAnalytics listings={myListings} />
           </div>
         )}
 

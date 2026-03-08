@@ -15,6 +15,7 @@ import Footer from "@/components/Footer";
 import ReviewSection from "@/components/ReviewSection";
 import PropertyMap from "@/components/PropertyMap";
 import Lightbox from "@/components/Lightbox";
+import MortgageCalculator from "@/components/MortgageCalculator";
 import { properties as mockProperties, reviews, formatPrice, type Property } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
@@ -209,6 +210,8 @@ export default function PropertyDetail() {
                 <div className="mt-3"><PropertyMap latitude={property.latitude!} longitude={property.longitude!} title={property.title} /></div>
               </div>
             )}
+
+            <MortgageCalculator propertyPrice={property.price} />
 
             <ReviewSection reviews={propertyReviews} propertyId={property.id} />
           </div>
