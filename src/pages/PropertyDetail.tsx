@@ -211,6 +211,8 @@ export default function PropertyDetail() {
               </div>
             )}
 
+            <MortgageCalculator propertyPrice={property.price} />
+
             <ReviewSection reviews={propertyReviews} propertyId={property.id} />
           </div>
 
