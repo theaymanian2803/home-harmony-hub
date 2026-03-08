@@ -14,7 +14,7 @@ import PropertyForm from "@/components/PropertyForm";
 import AdminListingControls from "@/components/AdminListingControls";
 import { useTranslation } from "react-i18next";
 
-type Tab = "overview" | "properties" | "pending" | "users" | "add-property";
+type Tab = "overview" | "properties" | "pending" | "users" | "add-property" | "listing-controls";
 interface PropertyRow { id: string; title: string; price: number; views: number; status: string; user_id: string; city: string; state: string; }
 interface ProfileRow { id: string; email: string; full_name: string; created_at: string; }
 
