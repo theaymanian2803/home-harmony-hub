@@ -79,8 +79,8 @@ export default function DashboardAnalytics({ listings }: Props) {
           <h4 className="font-display text-xl font-bold text-foreground mb-4">Views by Property</h4>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={viewsData}>
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(25, 15%, 45%)" }} angle={-20} textAnchor="end" height={60} />
-              <YAxis tick={{ fontSize: 11, fill: "hsl(25, 15%, 45%)" }} />
+              <XAxis dataKey="name" tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} angle={-20} textAnchor="end" height={60} />
+              <YAxis tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} />
               <Tooltip
                 contentStyle={{
                   background: "hsl(30, 15%, 91%)",
