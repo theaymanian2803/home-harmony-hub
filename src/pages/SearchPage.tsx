@@ -227,6 +227,18 @@ export default function SearchPage() {
           ))}
         </div>
       </div>
+
+      {hasActiveFilters && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={clearAllFilters}
+          className="w-full mt-2 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+        >
+          <X className="mr-1 h-4 w-4" />
+          Clear All Filters
+        </Button>
+      )}
     </div>
   );
 
