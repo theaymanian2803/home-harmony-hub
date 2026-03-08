@@ -32,7 +32,7 @@ interface PropertyRow {
 export default function SellerDashboard() {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
-  const { isSubscribed } = useSubscription();
+  const { isSubscribed, details, cancelSubscription } = useSubscription();
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("overview");
