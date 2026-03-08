@@ -193,23 +193,26 @@ export default function SearchPage() {
               variant="outline"
               size="sm"
               className="md:hidden"
-              onClick={() => setFiltersOpen(!filtersOpen)}
+              onClick={() => setFiltersOpen((o) => !o)}
             >
               <SlidersHorizontal className="mr-1 h-4 w-4" />
               Filters
             </Button>
-            <Button
-              variant={mapView ? "default" : "outline"}
-              size="sm"
-              onClick={() => setMapView(!mapView)}
-              className={mapView ? "gradient-caramel text-accent-foreground" : ""}
-            >
-              {mapView ? (
-                <><LayoutGrid className="mr-1 h-4 w-4" /> Grid View</>
-              ) : (
-                <><Map className="mr-1 h-4 w-4" /> Map View</>
-              )}
-            </Button>
+            {([
+              { mode: "grid" as const, icon: LayoutGrid, label: "Grid" },
+              { mode: "split" as const, icon: Columns2, label: "Split" },
+              { mode: "map" as const, icon: Map, label: "Map" },
+            ]).map(({ mode, icon: Icon, label }) => (
+              <Button
+                key={mode}
+                variant={viewMode === mode ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode(mode)}
+                className={viewMode === mode ? "gradient-caramel text-accent-foreground" : ""}
+              >
+                <Icon className="mr-1 h-4 w-4" /> {label}
+              </Button>
+            ))}
           </div>
         </div>
 
