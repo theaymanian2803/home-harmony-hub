@@ -77,6 +77,7 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
         {[
           { label: "Total Listings", value: listings.length },
           { label: "Total Views", value: totalViews.toLocaleString() },
+          { label: "Total Saves", value: totalSaves.toLocaleString() },
           { label: "Avg. Price", value: `$${(avgPrice / 1000).toFixed(0)}K` },
           { label: "Active", value: listings.filter((l) => l.status === "active").length },
         ].map((s) => (
