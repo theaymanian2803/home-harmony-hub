@@ -144,7 +144,7 @@ export default function PropertyDetail() {
 
         {/* Image gallery */}
         <div className="relative mt-2 overflow-hidden rounded-xl">
-          <img src={property.images[currentImage]} alt={property.title} className="aspect-[16/7] w-full object-cover" />
+          <img src={property.images[currentImage]} alt={property.title} className="aspect-[16/7] w-full object-cover cursor-zoom-in" onClick={() => setLightboxOpen(true)} />
           {hasMultipleImages && (
             <>
               <button onClick={() => setCurrentImage((prev) => (prev === 0 ? property.images.length - 1 : prev - 1))} className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-card/80 p-2 backdrop-blur-sm transition-colors hover:bg-card">
