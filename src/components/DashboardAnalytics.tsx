@@ -66,9 +66,9 @@ export default function DashboardAnalytics({ listings }: Props) {
           { label: "Avg. Price", value: `$${(avgPrice / 1000).toFixed(0)}K` },
           { label: "Active", value: listings.filter((l) => l.status === "active").length },
         ].map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-4 text-center">
-            <p className="font-display text-2xl font-bold text-foreground">{s.value}</p>
-            <p className="text-xs text-muted-foreground">{s.label}</p>
+          <div key={s.label} className="rounded-xl border border-border bg-card p-5 text-center">
+            <p className="font-display text-3xl font-bold text-foreground">{s.value}</p>
+            <p className="text-sm font-medium text-muted-foreground">{s.label}</p>
           </div>
         ))}
       </div>
@@ -76,11 +76,11 @@ export default function DashboardAnalytics({ listings }: Props) {
       <div className="grid gap-6 md:grid-cols-2">
         {/* Views by Property */}
         <div className="rounded-xl border border-border bg-card p-5">
-          <h4 className="font-display text-lg font-semibold text-foreground mb-4">Views by Property</h4>
+          <h4 className="font-display text-xl font-bold text-foreground mb-4">Views by Property</h4>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={viewsData}>
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(25, 15%, 45%)" }} angle={-20} textAnchor="end" height={60} />
-              <YAxis tick={{ fontSize: 11, fill: "hsl(25, 15%, 45%)" }} />
+              <XAxis dataKey="name" tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} angle={-20} textAnchor="end" height={60} />
+              <YAxis tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }} />
               <Tooltip
                 contentStyle={{
                   background: "hsl(30, 15%, 91%)",
@@ -96,7 +96,7 @@ export default function DashboardAnalytics({ listings }: Props) {
 
         {/* Status Distribution */}
         <div className="rounded-xl border border-border bg-card p-5">
-          <h4 className="font-display text-lg font-semibold text-foreground mb-4">Listing Status</h4>
+          <h4 className="font-display text-xl font-bold text-foreground mb-4">Listing Status</h4>
           <div className="flex items-center justify-center">
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
