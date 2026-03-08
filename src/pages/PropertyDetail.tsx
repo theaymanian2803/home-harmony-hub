@@ -306,6 +306,14 @@ export default function PropertyDetail() {
         </div>
       </div>
       <Footer />
+      {lightboxOpen && (
+        <Lightbox
+          images={property.images}
+          currentIndex={currentImage}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={(i) => setCurrentImage(i)}
+        />
+      )}
     </div>
   );
 }
