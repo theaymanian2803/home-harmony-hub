@@ -89,7 +89,7 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Views by Property */}
+        {/* Views & Saves by Property */}
         <div className="rounded-xl border border-border bg-card p-5">
           <h4 className="font-display text-xl font-bold text-foreground mb-4">Views by Property</h4>
           <ResponsiveContainer width="100%" height={220}>
