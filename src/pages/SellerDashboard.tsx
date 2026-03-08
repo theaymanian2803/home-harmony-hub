@@ -112,6 +112,15 @@ export default function SellerDashboard() {
     toast({ title: t("dashboard.listingDeleted"), variant: "destructive" });
   };
 
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    else {
+      setMyListings((prev) => prev.map((p) => p.id === id ? { ...p, status: newStatus } : p));
+      toast({ title: t("dashboard.statusUpdated") || "Status updated", description: `Property marked as ${newStatus}` });
+    }
+  };
+
   if (authLoading || !user) return null;
 
   return (
