@@ -40,6 +40,18 @@ export default function SellerDashboard() {
   const [loadingListings, setLoadingListings] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<PropertyFormData> | null>(null);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(false);
+
+  // Show welcome banner for new subscribers
+  useEffect(() => {
+    if (isSubscribed && details?.status === "active") {
+      const bannerKey = `seller_pro_welcome_shown_${user?.id}`;
+      if (!localStorage.getItem(bannerKey)) {
+        setShowWelcomeBanner(true);
+        localStorage.setItem(bannerKey, "true");
+      }
+    }
+  }, [isSubscribed, details, user?.id]);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
