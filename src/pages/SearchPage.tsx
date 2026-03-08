@@ -229,7 +229,9 @@ export default function SearchPage() {
           )}
 
           <div className="flex-1">
-            {filtered.length === 0 ? (
+            {mapView ? (
+              <SearchMapView properties={filtered} />
+            ) : filtered.length === 0 ? (
               <div className="py-20 text-center text-muted-foreground">
                 No properties match your filters. Try adjusting your criteria.
               </div>
