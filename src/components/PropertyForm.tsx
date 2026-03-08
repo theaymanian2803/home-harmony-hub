@@ -171,14 +171,19 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Property Type</label>
           <select name="type" defaultValue={initialData?.type || "House"} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            {["House", "Apartment", "Condo", "Townhouse", "Villa"].map((t) => (
-              <option key={t} value={t}>{t}</option>
+            {getByCategory("property_type").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
             ))}
           </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Style</label>
-          <Input name="property_style" placeholder="e.g. Colonial, Modern" defaultValue={initialData?.property_style} />
+          <select name="property_style" defaultValue={initialData?.property_style || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select style</option>
+            {getByCategory("property_style").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
       </div>
 
