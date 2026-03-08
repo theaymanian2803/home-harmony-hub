@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { MapPin, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import ImageUpload from "@/components/ImageUpload";
 
 export interface PropertyFormData {
@@ -43,6 +45,46 @@ interface PropertyFormProps {
 export default function PropertyForm({ userId, initialData, onSubmit, submitLabel }: PropertyFormProps) {
   const [images, setImages] = useState<string[]>(initialData?.images || []);
   const [submitting, setSubmitting] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
+  const latRef = useRef<HTMLInputElement>(null);
+  const lngRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleGeocode = async () => {
+    if (!formRef.current) return;
+    const f = new FormData(formRef.current);
+    const street = (f.get("location") as string) || "";
+    const city = (f.get("city") as string) || "";
+    const state = (f.get("state") as string) || "";
+    const zip = (f.get("zip_code") as string) || "";
+
+    const query = [street, city, state, zip].filter(Boolean).join(", ");
+    if (!query.trim()) {
+      toast.error("Enter an address, city, or state first");
+      return;
+    }
+
+    setGeocoding(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`,
+        { headers: { "User-Agent": "EstateHub/1.0" } }
+      );
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        if (latRef.current) latRef.current.value = parseFloat(lat).toFixed(6);
+        if (lngRef.current) lngRef.current.value = parseFloat(lon).toFixed(6);
+        toast.success("Coordinates found and filled in!");
+      } else {
+        toast.error("No results found. Try a more specific address.");
+      }
+    } catch {
+      toast.error("Geocoding failed. Please try again.");
+    } finally {
+      setGeocoding(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -91,7 +133,7 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
   );
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 max-w-3xl space-y-2">
+    <form ref={formRef} onSubmit={handleSubmit} className="mt-8 max-w-3xl space-y-2">
       {/* Basic Info */}
       <SectionTitle>Basic Information</SectionTitle>
       <div>
@@ -208,14 +250,24 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Latitude</label>
-          <Input name="latitude" type="number" step="any" placeholder="34.0522" defaultValue={initialData?.latitude ?? ""} />
+          <Input ref={latRef} name="latitude" type="number" step="any" placeholder="34.0522" defaultValue={initialData?.latitude ?? ""} />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Longitude</label>
-          <Input name="longitude" type="number" step="any" placeholder="-118.2437" defaultValue={initialData?.longitude ?? ""} />
+          <Input ref={lngRef} name="longitude" type="number" step="any" placeholder="-118.2437" defaultValue={initialData?.longitude ?? ""} />
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">Tip: Find coordinates on Google Maps by right-clicking a location.</p>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleGeocode}
+        disabled={geocoding}
+        className="mt-1"
+      >
+        {geocoding ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <MapPin className="mr-1 h-4 w-4" />}
+        {geocoding ? "Finding coordinates…" : "Auto-fill coordinates from address"}
+      </Button>
 
       {/* Amenities */}
       <SectionTitle>Amenities & Features</SectionTitle>
