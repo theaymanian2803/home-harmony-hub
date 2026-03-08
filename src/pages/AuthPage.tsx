@@ -34,7 +34,8 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "Check your email", description: "We sent you a confirmation link." });
+        toast({ title: "Account created!", description: "Welcome to EstateHub." });
+        navigate("/dashboard");
       }
     }
 
