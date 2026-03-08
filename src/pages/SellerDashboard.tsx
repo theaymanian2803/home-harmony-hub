@@ -19,7 +19,6 @@ import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 import SubscriptionManagement from "@/components/SubscriptionManagement";
 
 type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
-const FREE_LISTING_LIMIT = 2;
 
 interface PropertyRow {
   id: string;
