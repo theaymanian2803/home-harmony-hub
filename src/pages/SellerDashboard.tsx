@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
@@ -32,6 +33,7 @@ export default function SellerDashboard() {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const { isSubscribed } = useSubscription();
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("overview");
   const [myListings, setMyListings] = useState<PropertyRow[]>([]);
@@ -54,7 +56,7 @@ export default function SellerDashboard() {
     fetchListings();
   }, [user]);
 
-  const atLimit = !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
+  const atLimit = !isAdmin && !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -125,7 +127,7 @@ export default function SellerDashboard() {
         </div>
 
         {/* Free tier banner */}
-        {!isSubscribed && (
+        {!isAdmin && !isSubscribed && (
           <div className="mt-6 flex flex-col gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-accent/10 p-2"><Lock className="h-5 w-5 text-accent" /></div>
