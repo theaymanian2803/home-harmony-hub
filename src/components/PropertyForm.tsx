@@ -49,7 +49,22 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
   const [geocoding, setGeocoding] = useState(false);
   const latRef = useRef<HTMLInputElement>(null);
   const lngRef = useRef<HTMLInputElement>(null);
+  const cityRef = useRef<HTMLInputElement>(null);
+  const stateRef = useRef<HTMLInputElement>(null);
+  const zipRef = useRef<HTMLInputElement>(null);
+  const neighborhoodRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  const handleAddressSelect = (s: any) => {
+    const addr = s.address || {};
+    if (cityRef.current) cityRef.current.value = addr.city || addr.town || addr.village || "";
+    if (stateRef.current) stateRef.current.value = addr.state || "";
+    if (zipRef.current) zipRef.current.value = addr.postcode || "";
+    if (neighborhoodRef.current) neighborhoodRef.current.value = addr.neighbourhood || addr.suburb || "";
+    if (latRef.current) latRef.current.value = parseFloat(s.lat).toFixed(6);
+    if (lngRef.current) lngRef.current.value = parseFloat(s.lon).toFixed(6);
+    toast.success("Address selected — fields auto-filled!");
+  };
 
   const handleGeocode = async () => {
     if (!formRef.current) return;
