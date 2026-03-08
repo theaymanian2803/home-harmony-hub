@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal, X, Map, LayoutGrid, Columns2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -17,7 +16,7 @@ export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "map" | "split">("grid");
-  const [priceRange, setPriceRange] = useState([0, 4000000]);
+  const [priceSort, setPriceSort] = useState<"none" | "asc" | "desc">("none");
   const [beds, setBeds] = useState(0);
   const [baths, setBaths] = useState(0);
   const [selectedType, setSelectedType] = useState(() => {
@@ -73,15 +72,17 @@ export default function SearchPage() {
   }, []);
 
   const filtered = useMemo(() => {
-    return allProperties.filter((p) => {
-      if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
+    const result = allProperties.filter((p) => {
       if (beds > 0 && p.beds < beds) return false;
       if (baths > 0 && p.baths < baths) return false;
       if (selectedType && p.type !== selectedType) return false;
       if (selectedAmenities.length > 0 && !selectedAmenities.every((a) => p.amenities.includes(a))) return false;
       return true;
     });
-  }, [allProperties, priceRange, beds, baths, selectedType, selectedAmenities]);
+    if (priceSort === "asc") result.sort((a, b) => a.price - b.price);
+    if (priceSort === "desc") result.sort((a, b) => b.price - a.price);
+    return result;
+  }, [allProperties, priceSort, beds, baths, selectedType, selectedAmenities]);
 
   const toggleAmenity = (a: string) =>
     setSelectedAmenities((prev) =>
@@ -91,18 +92,25 @@ export default function SearchPage() {
   const FilterPanel = () => (
     <div className="space-y-6">
       <div>
-        <label className="mb-2 block text-sm font-semibold text-foreground">Price Range</label>
-        <Slider
-          min={0}
-          max={4000000}
-          step={50000}
-          value={priceRange}
-          onValueChange={setPriceRange}
-          className="mt-2"
-        />
-        <div className="mt-1 flex justify-between text-xs text-muted-foreground">
-          <span>${(priceRange[0] / 1000).toFixed(0)}k</span>
-          <span>${(priceRange[1] / 1000000).toFixed(1)}M</span>
+        <label className="mb-2 block text-sm font-semibold text-foreground">Sort by Price</label>
+        <div className="flex gap-2">
+          {([
+            { value: "none" as const, label: "Default" },
+            { value: "asc" as const, label: "Low → High" },
+            { value: "desc" as const, label: "High → Low" },
+          ]).map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => setPriceSort(value)}
+              className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
+                priceSort === value
+                  ? "border-accent bg-accent text-accent-foreground"
+                  : "border-border text-muted-foreground hover:border-accent"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
