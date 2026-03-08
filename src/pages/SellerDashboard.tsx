@@ -95,7 +95,20 @@ export default function SellerDashboard() {
     });
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      if (error.message?.includes("Listing limit reached")) {
+        toast({
+          title: "Listing limit reached",
+          description: `Your ${currentPlan === "free" ? "Free" : currentPlan === "pro" ? "Seller Pro" : ""} plan allows ${listingLimit} listings. Upgrade your plan to list more properties.`,
+          variant: "destructive",
+          action: (
+            <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground" asChild>
+              <Link to="/pricing">Upgrade</Link>
+            </Button>
+          ),
+        });
+      } else {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      }
     } else {
       toast({ title: isAdmin ? "Listing Published!" : "Listing Submitted!", description: isAdmin ? "Your property is now live." : "Your listing is pending admin approval." });
       await refreshListings();
