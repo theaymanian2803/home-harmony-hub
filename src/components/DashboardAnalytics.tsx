@@ -57,6 +57,7 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
 
 
   const totalViews = listings.reduce((s, l) => s + (l.views || 0), 0);
+  const totalSaves = savesData.reduce((s, d) => s + d.saves_count, 0);
   const avgPrice = listings.length
     ? Math.round(listings.reduce((s, l) => s + l.price, 0) / listings.length)
     : 0;
