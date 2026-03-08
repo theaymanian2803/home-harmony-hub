@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
-import { SlidersHorizontal, X, Map } from "lucide-react";
+import { SlidersHorizontal, X, Map, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import SearchMapView from "@/components/SearchMapView";
 import { properties as mockProperties, type Property } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,6 +14,7 @@ const allAmenities = ["Pool", "Garden", "Garage", "Fireplace", "Smart Home", "Te
 
 export default function SearchPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [mapView, setMapView] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 4000000]);
   const [beds, setBeds] = useState(0);
   const [baths, setBaths] = useState(0);
@@ -43,6 +45,8 @@ export default function SearchPage() {
           amenities: d.amenities || [],
           images: d.images && d.images.length > 0 ? d.images : ["/placeholder.svg"],
           featured: d.featured || false,
+          latitude: d.latitude ?? undefined,
+          longitude: d.longitude ?? undefined,
           sellerId: d.user_id,
           sellerName: "Owner",
           createdAt: new Date(d.created_at).toLocaleDateString(),
@@ -184,8 +188,17 @@ export default function SearchPage() {
               <SlidersHorizontal className="mr-1 h-4 w-4" />
               Filters
             </Button>
-            <Button variant="outline" size="sm" disabled>
-              <Map className="mr-1 h-4 w-4" /> Map View
+            <Button
+              variant={mapView ? "default" : "outline"}
+              size="sm"
+              onClick={() => setMapView(!mapView)}
+              className={mapView ? "gradient-caramel text-accent-foreground" : ""}
+            >
+              {mapView ? (
+                <><LayoutGrid className="mr-1 h-4 w-4" /> Grid View</>
+              ) : (
+                <><Map className="mr-1 h-4 w-4" /> Map View</>
+              )}
             </Button>
           </div>
         </div>
@@ -216,7 +229,9 @@ export default function SearchPage() {
           )}
 
           <div className="flex-1">
-            {filtered.length === 0 ? (
+            {mapView ? (
+              <SearchMapView properties={filtered} />
+            ) : filtered.length === 0 ? (
               <div className="py-20 text-center text-muted-foreground">
                 No properties match your filters. Try adjusting your criteria.
               </div>

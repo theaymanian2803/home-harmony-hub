@@ -24,6 +24,8 @@ export interface Property {
   sellerName: string;
   createdAt: string;
   views: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Review {
@@ -55,6 +57,8 @@ export const properties: Property[] = [
     sellerName: "James Morrison",
     createdAt: "2026-02-15",
     views: 1243,
+    latitude: 34.0736,
+    longitude: -118.4004,
   },
   {
     id: "2",
@@ -75,6 +79,8 @@ export const properties: Property[] = [
     sellerName: "Sarah Chen",
     createdAt: "2026-02-20",
     views: 876,
+    latitude: 41.7508,
+    longitude: -88.1535,
   },
   {
     id: "3",
@@ -95,6 +101,8 @@ export const properties: Property[] = [
     sellerName: "James Morrison",
     createdAt: "2026-01-10",
     views: 2105,
+    latitude: 40.7484,
+    longitude: -73.9857,
   },
   {
     id: "4",
@@ -115,6 +123,8 @@ export const properties: Property[] = [
     sellerName: "Emily Rodriguez",
     createdAt: "2026-03-01",
     views: 432,
+    latitude: 35.5951,
+    longitude: -82.5515,
   },
   {
     id: "5",
@@ -135,6 +145,8 @@ export const properties: Property[] = [
     sellerName: "Sarah Chen",
     createdAt: "2026-02-28",
     views: 1567,
+    latitude: 33.4942,
+    longitude: -111.9261,
   },
   {
     id: "6",
@@ -155,6 +167,8 @@ export const properties: Property[] = [
     sellerName: "Emily Rodriguez",
     createdAt: "2026-03-05",
     views: 987,
+    latitude: 40.6782,
+    longitude: -73.9772,
   },
 ];
 
