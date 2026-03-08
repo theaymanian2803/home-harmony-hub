@@ -15,10 +15,14 @@ import { properties, formatPrice } from "@/data/mockData";
 
 type Tab = "overview" | "create" | "manage";
 
+const FREE_LISTING_LIMIT = 2;
+
 export default function SellerDashboard() {
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>("overview");
+  const [isSubscribed] = useState(false);
   const myListings = properties.filter((p) => p.sellerId === "s1");
+  const atLimit = !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
