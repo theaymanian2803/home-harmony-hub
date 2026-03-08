@@ -41,11 +41,13 @@ export function useSubscription() {
 
     const active = data?.status === "active" && (data?.plan === "pro" || data?.plan === "unlimited");
     setIsSubscribed(active);
+    // Only show paid plan if subscription is active; otherwise treat as free
+    const effectivePlan: PlanType = active ? ((data?.plan as PlanType) || "free") : "free";
     setDetails(
       data
         ? {
             status: data.status,
-            plan: (data.plan as PlanType) || "free",
+            plan: effectivePlan,
             currentPeriodStart: data.current_period_start,
             currentPeriodEnd: data.current_period_end,
           }
