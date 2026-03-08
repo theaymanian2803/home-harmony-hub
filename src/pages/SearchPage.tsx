@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal, X, Map, LayoutGrid, Columns2, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import SearchMapView from "@/components/SearchMapView";
+import SavedSearches, { type SearchFilters } from "@/components/SavedSearches";
 import { properties as mockProperties, type Property } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -107,6 +108,18 @@ export default function SearchPage() {
   };
 
   const hasActiveFilters = priceSort !== "none" || minPrice || maxPrice || beds > 0 || baths > 0 || selectedType || selectedAmenities.length > 0;
+
+  const currentFilters: SearchFilters = { priceSort, minPrice, maxPrice, beds, baths, selectedType, selectedAmenities };
+
+  const applyFilters = useCallback((f: SearchFilters) => {
+    setPriceSort(f.priceSort);
+    setMinPrice(f.minPrice);
+    setMaxPrice(f.maxPrice);
+    setBeds(f.beds);
+    setBaths(f.baths);
+    setSelectedType(f.selectedType);
+    setSelectedAmenities(f.selectedAmenities);
+  }, []);
 
   const FilterPanel = () => (
     <div className="space-y-6">
@@ -239,6 +252,10 @@ export default function SearchPage() {
           Clear All Filters
         </Button>
       )}
+
+      <div className="border-t border-border pt-4">
+        <SavedSearches currentFilters={currentFilters} onApply={applyFilters} />
+      </div>
     </div>
   );
 
