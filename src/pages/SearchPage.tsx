@@ -18,6 +18,8 @@ export default function SearchPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "map" | "split">("grid");
   const [priceSort, setPriceSort] = useState<"none" | "asc" | "desc">("none");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [beds, setBeds] = useState(0);
   const [baths, setBaths] = useState(0);
   const [selectedType, setSelectedType] = useState(() => {
