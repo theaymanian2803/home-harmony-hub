@@ -33,6 +33,7 @@ export default function SellerDashboard() {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const { isSubscribed } = useSubscription();
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("overview");
   const [myListings, setMyListings] = useState<PropertyRow[]>([]);
@@ -55,7 +56,7 @@ export default function SellerDashboard() {
     fetchListings();
   }, [user]);
 
-  const atLimit = !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
+  const atLimit = !isAdmin && !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
