@@ -3,9 +3,11 @@ import { MapPin, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import ImageUpload from "@/components/ImageUpload";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { useListingOptions } from "@/hooks/useListingOptions";
 
 export interface PropertyFormData {
   title: string;
@@ -47,6 +49,8 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
   const [images, setImages] = useState<string[]>(initialData?.images || []);
   const [submitting, setSubmitting] = useState(false);
   const [geocoding, setGeocoding] = useState(false);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(initialData?.amenities || []);
+  const { getByCategory, loading: optionsLoading } = useListingOptions();
   const latRef = useRef<HTMLInputElement>(null);
   const lngRef = useRef<HTMLInputElement>(null);
   const cityRef = useRef<HTMLInputElement>(null);
@@ -137,7 +141,7 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
       flooring: str("flooring"),
       roof: str("roof"),
       hoa_fee: num("hoa_fee"),
-      amenities: str("amenities").split(",").map((s) => s.trim()).filter(Boolean),
+      amenities: selectedAmenities,
       images,
     });
     setSubmitting(false);
@@ -167,14 +171,19 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Property Type</label>
           <select name="type" defaultValue={initialData?.type || "House"} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            {["House", "Apartment", "Condo", "Townhouse", "Villa"].map((t) => (
-              <option key={t} value={t}>{t}</option>
+            {getByCategory("property_type").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
             ))}
           </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Style</label>
-          <Input name="property_style" placeholder="e.g. Colonial, Modern" defaultValue={initialData?.property_style} />
+          <select name="property_style" defaultValue={initialData?.property_style || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select style</option>
+            {getByCategory("property_style").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -222,19 +231,39 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Heating</label>
-          <Input name="heating" placeholder="e.g. Central, Forced Air" defaultValue={initialData?.heating} />
+          <select name="heating" defaultValue={initialData?.heating || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select heating</option>
+            {getByCategory("heating").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Cooling</label>
-          <Input name="cooling" placeholder="e.g. Central AC, Mini-Split" defaultValue={initialData?.cooling} />
+          <select name="cooling" defaultValue={initialData?.cooling || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select cooling</option>
+            {getByCategory("cooling").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Flooring</label>
-          <Input name="flooring" placeholder="e.g. Hardwood, Tile, Carpet" defaultValue={initialData?.flooring} />
+          <select name="flooring" defaultValue={initialData?.flooring || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select flooring</option>
+            {getByCategory("flooring").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Roof</label>
-          <Input name="roof" placeholder="e.g. Shingle, Metal, Tile" defaultValue={initialData?.roof} />
+          <select name="roof" defaultValue={initialData?.roof || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select roof type</option>
+            {getByCategory("roof").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -291,9 +320,23 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
 
       {/* Amenities */}
       <SectionTitle>Amenities & Features</SectionTitle>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-foreground">Amenities</label>
-        <Input name="amenities" placeholder="Pool, Garden, Garage, Smart Home (comma separated)" defaultValue={initialData?.amenities?.join(", ")} />
+      <div className="flex flex-wrap gap-3">
+        {getByCategory("amenity").map((o) => (
+          <label key={o.id} className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+            <Checkbox
+              checked={selectedAmenities.includes(o.value)}
+              onCheckedChange={(checked) => {
+                setSelectedAmenities((prev) =>
+                  checked ? [...prev, o.value] : prev.filter((a) => a !== o.value)
+                );
+              }}
+            />
+            {o.value}
+          </label>
+        ))}
+        {getByCategory("amenity").length === 0 && (
+          <p className="text-sm text-muted-foreground italic">No amenities configured yet</p>
+        )}
       </div>
 
       {/* Images */}
