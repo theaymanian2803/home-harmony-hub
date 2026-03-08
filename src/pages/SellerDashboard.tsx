@@ -159,7 +159,7 @@ export default function SellerDashboard() {
                 <div key={stat.label} className="rounded-lg border border-border bg-card p-6">
                   <div className="flex items-center gap-3">
                     <div className="rounded-lg bg-accent/10 p-2"><stat.icon className="h-5 w-5 text-accent" /></div>
-                    <div><p className="text-2xl font-bold text-foreground font-display">{stat.value}</p><p className="text-sm text-muted-foreground">{stat.label}</p></div>
+                    <div><p className="text-3xl font-bold text-foreground font-display">{stat.value}</p><p className="text-sm font-medium text-foreground/70">{stat.label}</p></div>
                   </div>
                 </div>
               ))}

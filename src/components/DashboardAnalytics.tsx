@@ -96,7 +96,7 @@ export default function DashboardAnalytics({ listings }: Props) {
 
         {/* Status Distribution */}
         <div className="rounded-xl border border-border bg-card p-5">
-          <h4 className="font-display text-lg font-semibold text-foreground mb-4">Listing Status</h4>
+          <h4 className="font-display text-xl font-bold text-foreground mb-4">Listing Status</h4>
           <div className="flex items-center justify-center">
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
