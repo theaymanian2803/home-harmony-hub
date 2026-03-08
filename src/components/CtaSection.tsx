@@ -10,8 +10,8 @@ export default function CtaSection() {
           Ready to Sell Your Property?
         </h2>
         <p className="mx-auto mt-4 max-w-lg text-primary-foreground/70">
-          List your property to thousands of motivated buyers for just{" "}
-          <span className="font-semibold text-accent">$10/month</span>. No hidden fees, cancel anytime.
+          List up to 2 properties for free. Need more? Upgrade to Seller Pro for just{" "}
+          <span className="font-semibold text-accent">$10/month</span> — unlimited listings, analytics & priority support.
         </p>
         <Button
           size="lg"

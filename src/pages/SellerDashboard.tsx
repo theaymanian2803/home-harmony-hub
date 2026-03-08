@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Image,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Image, Lock, ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,10 +16,14 @@ import { properties, formatPrice } from "@/data/mockData";
 
 type Tab = "overview" | "create" | "manage";
 
+const FREE_LISTING_LIMIT = 2;
+
 export default function SellerDashboard() {
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>("overview");
+  const [isSubscribed] = useState(false);
   const myListings = properties.filter((p) => p.sellerId === "s1");
+  const atLimit = !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -28,6 +33,10 @@ export default function SellerDashboard() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (atLimit) {
+      toast({ title: "Listing limit reached", description: "Upgrade to Seller Pro to add unlimited listings.", variant: "destructive" });
+      return;
+    }
     toast({ title: "Listing Published!", description: "Your property is now live." });
     setTab("manage");
   };
@@ -55,6 +64,30 @@ export default function SellerDashboard() {
             </button>
           ))}
         </div>
+
+        {/* Free tier banner */}
+        {!isSubscribed && (
+          <div className="mt-6 flex flex-col gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-accent/10 p-2">
+                <Lock className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  Free Plan — {myListings.length}/{FREE_LISTING_LIMIT} listings used
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Upgrade to Seller Pro for unlimited listings, analytics & more.
+                </p>
+              </div>
+            </div>
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-emerald-light" asChild>
+              <Link to="/pricing">
+                Upgrade <ArrowRight className="ml-1 h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
+        )}
 
         {/* Overview */}
         {tab === "overview" && (
