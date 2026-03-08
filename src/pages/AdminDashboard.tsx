@@ -90,6 +90,7 @@ export default function AdminDashboard() {
     { id: "properties", label: t("admin.allProperties"), icon: Home },
     { id: "users", label: t("admin.users"), icon: Users },
     { id: "add-property", label: t("admin.addProperty"), icon: Plus },
+    { id: "listing-controls", label: "Listing Controls", icon: Settings2 },
   ];
 
   if (authLoading || adminLoading || !isAdmin) return null;
