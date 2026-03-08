@@ -241,9 +241,28 @@ export default function SearchPage() {
             </div>
           )}
 
-          <div className="flex-1">
-            {mapView ? (
+          <div className="flex-1 min-w-0">
+            {viewMode === "map" ? (
               <SearchMapView properties={filtered} />
+            ) : viewMode === "split" ? (
+              <div className="flex gap-4 h-[calc(100vh-14rem)] min-h-[500px]">
+                <div className="w-1/2 overflow-y-auto pr-2">
+                  {filtered.length === 0 ? (
+                    <div className="py-20 text-center text-muted-foreground">
+                      No properties match your filters.
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                      {filtered.map((p) => (
+                        <PropertyCard key={p.id} property={p} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="w-1/2 min-w-0">
+                  <SearchMapView properties={filtered} />
+                </div>
+              </div>
             ) : filtered.length === 0 ? (
               <div className="py-20 text-center text-muted-foreground">
                 No properties match your filters. Try adjusting your criteria.
