@@ -83,7 +83,7 @@ export default function SellerDashboard() {
 
   const handleCreate = async (formData: PropertyFormData) => {
     if (atLimit) {
-      toast({ title: "Listing limit reached", description: "Upgrade to Seller Pro to add unlimited listings.", variant: "destructive" });
+      toast({ title: "Listing limit reached", description: `You've reached your ${listingLimit === 2 ? "free plan" : currentPlan} limit. Upgrade to add more listings.`, variant: "destructive" });
       return;
     }
     if (!user) return;
