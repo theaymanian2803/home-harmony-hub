@@ -1,66 +1,147 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Search, MessageSquare, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 const steps = [
-  { step: "01", title: "Search", desc: "Browse listings by location, price, type, and amenities.", icon: Search },
-  { step: "02", title: "Connect", desc: "Contact verified sellers directly through our platform.", icon: MessageSquare },
-  { step: "03", title: "Close", desc: "Finalize your purchase with confidence and move in.", icon: Key },
+  {
+    step: "01",
+    title: "Search",
+    desc: "Browse curated listings by location, price, type, and amenities — with smart filters that learn what you love.",
+    icon: Search,
+    accent: "from-[hsl(var(--chocolate))] to-[hsl(var(--caramel))]",
+  },
+  {
+    step: "02",
+    title: "Connect",
+    desc: "Message verified sellers directly. Schedule tours, ask questions, and negotiate — all in one place.",
+    icon: MessageSquare,
+    accent: "from-[hsl(var(--caramel))] to-[hsl(var(--chocolate-light))]",
+  },
+  {
+    step: "03",
+    title: "Close",
+    desc: "Finalize your purchase with full transparency. No hidden fees, no surprises — just your new keys.",
+    icon: Key,
+    accent: "from-[hsl(var(--chocolate-light))] to-[hsl(var(--chocolate))]",
+  },
 ];
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.2 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const } },
+};
 
 export default function HowItWorks() {
   return (
-    <section className="section-padding gradient-chocolate relative overflow-hidden">
-      {/* Decorative shapes */}
-      <div className="absolute top-0 right-0 h-96 w-96 shape-blob bg-accent/5 blur-2xl" />
-      <div className="absolute bottom-0 left-0 h-64 w-64 shape-blob-3 bg-caramel/5 blur-2xl" />
-      <div className="absolute top-1/2 right-1/4 h-20 w-20 rounded-full border-2 border-accent/10 animate-float-slow" />
+    <section className="relative overflow-hidden py-24 md:py-32">
+      {/* Full-bleed dark background */}
+      <div className="absolute inset-0 bg-[hsl(var(--cocoa-dark))]" />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-5 py-2 text-sm font-semibold text-caramel backdrop-blur-sm">
-            Simple Process
+      {/* Subtle grid pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--caramel)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--caramel)) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      {/* Glow orbs */}
+      <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-[hsl(var(--chocolate)/0.15)] blur-[120px]" />
+      <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] rounded-full bg-[hsl(var(--caramel)/0.1)] blur-[100px]" />
+
+      <div className="container relative z-10 mx-auto px-4">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <span className="inline-block rounded-full border border-[hsl(var(--caramel)/0.3)] bg-[hsl(var(--caramel)/0.08)] px-5 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[hsl(var(--caramel))]">
+            How It Works
           </span>
-          <h2 className="mt-6 font-display text-3xl font-bold text-primary-foreground md:text-5xl">
-            How EstateHub Works
+          <h2 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-[hsl(var(--cream))] md:text-6xl">
+            Three steps to{" "}
+            <span className="bg-gradient-to-r from-[hsl(var(--caramel))] to-[hsl(var(--chocolate-light))] bg-clip-text text-transparent">
+              your dream home
+            </span>
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-primary-foreground/50">
-            Three simple steps to your next property. No complicated processes, no hidden fees.
+          <p className="mx-auto mt-5 max-w-lg text-base text-[hsl(var(--latte)/0.6)] md:text-lg">
+            No complicated processes, no hidden fees. Just a streamlined path from discovery to doorstep.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
+        {/* Steps */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="mt-20 grid gap-6 md:grid-cols-3 md:gap-0"
+        >
           {steps.map((s, i) => (
-            <div key={s.step} className="group text-center relative">
-              {/* Connector line */}
+            <motion.div key={s.step} variants={cardVariants} className="relative flex">
+              {/* Connector */}
               {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-[2px] bg-gradient-to-r from-accent/30 to-transparent" />
+                <div className="absolute right-0 top-1/2 z-20 hidden h-px w-full -translate-y-1/2 md:block">
+                  <div className="mx-auto h-[2px] w-full bg-gradient-to-r from-transparent via-[hsl(var(--caramel)/0.25)] to-transparent" />
+                </div>
               )}
-              <div className="mx-auto mb-6 relative">
-                {/* Outer neumorphic ring */}
-                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/80 border border-accent/10 transition-all duration-300 group-hover:scale-110"
-                  style={{ boxShadow: "6px 6px 14px hsl(25 45% 8% / 0.5), -6px -6px 14px hsl(25 35% 25% / 0.3)" }}
-                >
-                  <s.icon className="h-8 w-8 text-caramel transition-transform duration-300 group-hover:scale-110" />
-                </div>
-                {/* Step number badge */}
-                <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full gradient-caramel text-xs font-bold text-accent-foreground shadow-lg">
-                  {s.step}
-                </div>
-              </div>
-              <h3 className="font-display text-xl font-bold text-primary-foreground">{s.title}</h3>
-              <p className="mt-3 text-sm text-primary-foreground/50 max-w-xs mx-auto">{s.desc}</p>
-            </div>
-          ))}
-        </div>
 
-        <div className="mt-16 text-center">
-          <Button size="lg" className="gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl px-10 shadow-lg" asChild>
+              <div className="group relative z-10 flex w-full flex-col items-center rounded-3xl border border-[hsl(var(--cocoa-light)/0.3)] bg-[hsl(var(--cocoa)/0.6)] p-8 backdrop-blur-sm transition-all duration-500 hover:border-[hsl(var(--caramel)/0.4)] hover:bg-[hsl(var(--cocoa)/0.8)] md:mx-3 md:p-10">
+                {/* Hover glow */}
+                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${s.accent} opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-[0.07]`} />
+
+                {/* Step number — large watermark */}
+                <span className="absolute right-6 top-4 font-display text-7xl font-black text-[hsl(var(--cream)/0.04)] transition-all duration-500 group-hover:text-[hsl(var(--caramel)/0.08)]">
+                  {s.step}
+                </span>
+
+                {/* Icon */}
+                <div className={`relative mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${s.accent} shadow-lg shadow-[hsl(var(--chocolate)/0.3)] transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
+                  <s.icon className="h-7 w-7 text-accent-foreground" />
+                </div>
+
+                <h3 className="font-display text-2xl font-bold text-[hsl(var(--cream))]">
+                  {s.title}
+                </h3>
+                <p className="mt-3 text-center text-sm leading-relaxed text-[hsl(var(--latte)/0.5)]">
+                  {s.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="mt-16 text-center"
+        >
+          <Button
+            size="lg"
+            className="gradient-caramel rounded-2xl px-10 py-6 text-base font-semibold text-accent-foreground shadow-xl shadow-[hsl(var(--chocolate)/0.3)] transition-all hover:opacity-90 hover:shadow-2xl"
+            asChild
+          >
             <Link to="/search">
-              Start Browsing <ArrowRight className="ml-2 h-4 w-4" />
+              Start Browsing <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
