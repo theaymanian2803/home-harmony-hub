@@ -14,6 +14,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeToggle from "./ThemeToggle";
 
 function MegaMenuTrigger({ label, isActive, children }: { label: string; isActive?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
