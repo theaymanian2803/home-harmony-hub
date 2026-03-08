@@ -27,7 +27,13 @@ export default function SearchPage() {
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [allProperties, setAllProperties] = useState<Property[]>(mockProperties);
 
+  // Sync type filter with URL query params
   useEffect(() => {
+    const t = searchParams.get("type");
+    setSelectedType(t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : "");
+  }, [searchParams]);
+
+
     const fetchDbProperties = async () => {
       const { data } = await supabase
         .from("properties")
