@@ -65,6 +65,7 @@ export default function SellerDashboard() {
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "create", label: "New Listing", icon: Plus },
     { id: "manage", label: "Manage", icon: List },
+    { id: "subscription", label: "Subscription", icon: CreditCard },
   ];
 
   const handleCreate = async (formData: PropertyFormData) => {
