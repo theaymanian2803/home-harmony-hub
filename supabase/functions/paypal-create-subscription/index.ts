@@ -35,6 +35,9 @@ interface PlanConfig {
   planName: string;
   description: string;
   price: string;
+  intervalUnit: string;
+  intervalCount: number;
+  basePlan: string; // the plan name to store in DB (pro or unlimited)
 }
 
 const PLAN_CONFIGS: Record<string, PlanConfig> = {
@@ -44,6 +47,19 @@ const PLAN_CONFIGS: Record<string, PlanConfig> = {
     planName: "Seller Pro Monthly",
     description: "$10/month for up to 25 listings",
     price: "10",
+    intervalUnit: "MONTH",
+    intervalCount: 1,
+    basePlan: "pro",
+  },
+  pro_annual: {
+    productId: "SELLER_PRO",
+    productName: "Seller Pro Subscription",
+    planName: "Seller Pro Annual",
+    description: "$96/year for up to 25 listings (save 20%)",
+    price: "96",
+    intervalUnit: "YEAR",
+    intervalCount: 1,
+    basePlan: "pro",
   },
   unlimited: {
     productId: "SELLER_UNLIMITED",
@@ -51,6 +67,19 @@ const PLAN_CONFIGS: Record<string, PlanConfig> = {
     planName: "Seller Unlimited Monthly",
     description: "$90/month for unlimited listings",
     price: "90",
+    intervalUnit: "MONTH",
+    intervalCount: 1,
+    basePlan: "unlimited",
+  },
+  unlimited_annual: {
+    productId: "SELLER_UNLIMITED",
+    productName: "Seller Unlimited Subscription",
+    planName: "Seller Unlimited Annual",
+    description: "$864/year for unlimited listings (save 20%)",
+    price: "864",
+    intervalUnit: "YEAR",
+    intervalCount: 1,
+    basePlan: "unlimited",
   },
 };
 
@@ -58,20 +87,20 @@ async function ensurePlan(token: string, plan: string): Promise<string> {
   const config = PLAN_CONFIGS[plan];
   if (!config) throw new Error(`Unknown plan: ${plan}`);
 
-  // Try to find existing plan
+  // Try to find existing plan by listing
   const listRes = await fetch(
-    `${PAYPAL_BASE}/v1/billing/plans?product_id=${config.productId}&page_size=1&total_required=true`,
+    `${PAYPAL_BASE}/v1/billing/plans?product_id=${config.productId}&page_size=20&total_required=true`,
     { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
   );
 
   if (listRes.ok) {
     const listData = await listRes.json();
-    if (listData.plans && listData.plans.length > 0) {
-      return listData.plans[0].id;
-    }
+    // Find plan matching the name
+    const existing = listData.plans?.find((p: any) => p.name === config.planName);
+    if (existing) return existing.id;
   }
 
-  // Create product
+  // Create product (may already exist)
   const productRes = await fetch(`${PAYPAL_BASE}/v1/catalogs/products`, {
     method: "POST",
     headers: {
@@ -106,7 +135,7 @@ async function ensurePlan(token: string, plan: string): Promise<string> {
       description: config.description,
       billing_cycles: [
         {
-          frequency: { interval_unit: "MONTH", interval_count: 1 },
+          frequency: { interval_unit: config.intervalUnit, interval_count: config.intervalCount },
           tenure_type: "REGULAR",
           sequence: 1,
           total_cycles: 0,
@@ -152,6 +181,13 @@ Deno.serve(async (req) => {
     }
 
     const { returnUrl, cancelUrl, plan = "pro" } = await req.json();
+    const config = PLAN_CONFIGS[plan];
+    if (!config) {
+      return new Response(JSON.stringify({ error: `Unknown plan: ${plan}` }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const ppToken = await getPayPalAccessToken();
     const planId = await ensurePlan(ppToken, plan);
@@ -165,7 +201,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         plan_id: planId,
-        custom_id: `${user.id}|${plan}`,
+        custom_id: `${user.id}|${config.basePlan}`,
         application_context: {
           brand_name: "EstateHub",
           return_url: returnUrl,
@@ -188,7 +224,7 @@ Deno.serve(async (req) => {
       user_id: user.id,
       paypal_subscription_id: subscription.id,
       status: "pending",
-      plan: plan,
+      plan: config.basePlan,
     }, { onConflict: "user_id" });
 
     return new Response(JSON.stringify({ approvalUrl: approvalLink, subscriptionId: subscription.id }), {
