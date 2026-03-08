@@ -127,6 +127,7 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           <LanguageSwitcher />
           {user ? (
             <DropdownMenu>
