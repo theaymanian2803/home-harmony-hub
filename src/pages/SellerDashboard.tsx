@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard, PartyPopper, X, Heart,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard, PartyPopper, X, Heart, CheckCircle, FileText,
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -109,6 +112,15 @@ export default function SellerDashboard() {
     toast({ title: t("dashboard.listingDeleted"), variant: "destructive" });
   };
 
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    else {
+      setMyListings((prev) => prev.map((p) => p.id === id ? { ...p, status: newStatus } : p));
+      toast({ title: t("dashboard.statusUpdated") || "Status updated", description: `Property marked as ${newStatus}` });
+    }
+  };
+
   if (authLoading || !user) return null;
 
   return (
@@ -199,10 +211,22 @@ export default function SellerDashboard() {
                         {p.status === "active" && <Badge variant="secondary" className="bg-accent/10 text-accent">Active</Badge>}
                         {p.status === "pending" && <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600">{t("dashboard.pending")}</Badge>}
                         {p.status === "rejected" && <Badge variant="secondary" className="bg-destructive/10 text-destructive">{t("dashboard.rejected")}</Badge>}
-                        {!["active", "pending", "rejected"].includes(p.status) && <Badge variant="secondary">{p.status}</Badge>}
+                        {p.status === "sold" && <Badge variant="secondary" className="bg-primary/10 text-primary">Sold</Badge>}
+                        {p.status === "under_contract" && <Badge variant="secondary" className="bg-blue-500/10 text-blue-600">Under Contract</Badge>}
+                        {!["active", "pending", "rejected", "sold", "under_contract"].includes(p.status) && <Badge variant="secondary">{p.status}</Badge>}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="icon" variant="ghost" title="Change status"><FileText className="h-4 w-4" /></Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {p.status !== "active" && <DropdownMenuItem onClick={() => handleStatusChange(p.id, "active")}><CheckCircle className="mr-2 h-4 w-4 text-accent" /> Mark Active</DropdownMenuItem>}
+                              {p.status !== "under_contract" && <DropdownMenuItem onClick={() => handleStatusChange(p.id, "under_contract")}><FileText className="mr-2 h-4 w-4 text-blue-600" /> Under Contract</DropdownMenuItem>}
+                              {p.status !== "sold" && <DropdownMenuItem onClick={() => handleStatusChange(p.id, "sold")}><CheckCircle className="mr-2 h-4 w-4 text-primary" /> Mark Sold</DropdownMenuItem>}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                           <Button size="icon" variant="ghost" onClick={() => handleEdit(p.id)}><Edit className="h-4 w-4" /></Button>
                           <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4" /></Button>
                         </div>
