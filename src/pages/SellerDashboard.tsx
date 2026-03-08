@@ -3,10 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight,
 } from "lucide-react";
-import ImageUpload from "@/components/ImageUpload";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -18,8 +15,9 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
+import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 
-type Tab = "overview" | "create" | "manage";
+type Tab = "overview" | "create" | "manage" | "edit";
 const FREE_LISTING_LIMIT = 2;
 
 interface PropertyRow {
@@ -39,63 +37,95 @@ export default function SellerDashboard() {
   const [tab, setTab] = useState<Tab>("overview");
   const [myListings, setMyListings] = useState<PropertyRow[]>([]);
   const [loadingListings, setLoadingListings] = useState(true);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editData, setEditData] = useState<PropertyFormData | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
   }, [user, authLoading, navigate]);
 
-  useEffect(() => {
+  const refreshListings = async () => {
     if (!user) return;
-    const fetchListings = async () => {
-      const { data } = await supabase
-        .from("properties")
-        .select("id, title, price, views, status")
-        .eq("user_id", user.id);
-      setMyListings((data as PropertyRow[]) || []);
-      setLoadingListings(false);
-    };
-    fetchListings();
+    const { data } = await supabase
+      .from("properties")
+      .select("id, title, price, views, status")
+      .eq("user_id", user.id);
+    setMyListings((data as PropertyRow[]) || []);
+    setLoadingListings(false);
+  };
+
+  useEffect(() => {
+    if (user) refreshListings();
   }, [user]);
 
   const atLimit = !isAdmin && !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
 
-  const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
+  const visibleTabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "create", label: "New Listing", icon: Plus },
     { id: "manage", label: "Manage", icon: List },
   ];
 
-  const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleCreate = async (formData: PropertyFormData) => {
     if (atLimit) {
       toast({ title: "Listing limit reached", description: "Upgrade to Seller Pro to add unlimited listings.", variant: "destructive" });
       return;
     }
     if (!user) return;
 
-    const form = new FormData(e.currentTarget);
     const { error } = await supabase.from("properties").insert({
       user_id: user.id,
-      title: form.get("title") as string,
-      description: form.get("description") as string,
-      price: Number(form.get("price")),
-      beds: Number(form.get("beds")),
-      baths: Number(form.get("baths")),
-      city: form.get("city") as string,
-      state: form.get("state") as string,
-      amenities: (form.get("amenities") as string)?.split(",").map((s) => s.trim()).filter(Boolean) || [],
-      images: uploadedImages,
+      ...formData,
     });
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Listing Published!", description: "Your property is now live." });
-      // Refresh listings
-      const { data } = await supabase.from("properties").select("id, title, price, views, status").eq("user_id", user.id);
-      setMyListings((data as PropertyRow[]) || []);
-      setUploadedImages([]);
+      await refreshListings();
+      setTab("manage");
+    }
+  };
+
+  const handleEdit = async (id: string) => {
+    const { data } = await supabase
+      .from("properties")
+      .select("title, description, price, beds, baths, city, state, amenities, images")
+      .eq("id", id)
+      .single();
+
+    if (data) {
+      setEditingId(id);
+      setEditData({
+        title: data.title,
+        description: data.description || "",
+        price: data.price,
+        beds: data.beds || 0,
+        baths: data.baths || 0,
+        city: data.city || "",
+        state: data.state || "",
+        amenities: data.amenities || [],
+        images: data.images || [],
+      });
+      setTab("edit");
+    }
+  };
+
+  const handleUpdate = async (formData: PropertyFormData) => {
+    if (!editingId) return;
+
+    const { error } = await supabase
+      .from("properties")
+      .update(formData)
+      .eq("id", editingId);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Listing Updated!", description: "Changes saved successfully." });
+      setEditingId(null);
+      setEditData(null);
+      await refreshListings();
       setTab("manage");
     }
   };
@@ -117,10 +147,10 @@ export default function SellerDashboard() {
 
         {/* Tabs */}
         <div className="mt-6 flex gap-2 border-b border-border pb-2">
-          {tabs.map((t) => (
+          {visibleTabs.map((t) => (
             <button
               key={t.id}
-              onClick={() => setTab(t.id)}
+              onClick={() => { setTab(t.id); if (t.id !== "edit") { setEditingId(null); setEditData(null); } }}
               className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 tab === t.id ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"
               }`}
@@ -128,6 +158,11 @@ export default function SellerDashboard() {
               <t.icon className="h-4 w-4" /> {t.label}
             </button>
           ))}
+          {tab === "edit" && (
+            <span className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground">
+              <Edit className="h-4 w-4" /> Edit Listing
+            </span>
+          )}
         </div>
 
         {/* Free tier banner */}
@@ -169,56 +204,26 @@ export default function SellerDashboard() {
 
         {/* Create listing */}
         {tab === "create" && (
-          <form onSubmit={handleCreate} className="mt-8 max-w-2xl space-y-5">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Title</label>
-              <Input name="title" placeholder="e.g. Modern Luxury Villa" required />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Description</label>
-              <Textarea name="description" placeholder="Describe the property…" rows={4} required />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Price ($)</label>
-                <Input name="price" type="number" placeholder="500000" required />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Beds</label>
-                <Input name="beds" type="number" placeholder="3" required />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Baths</label>
-                <Input name="baths" type="number" placeholder="2" required />
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">City</label>
-                <Input name="city" placeholder="Los Angeles" required />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">State</label>
-                <Input name="state" placeholder="CA" required />
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Amenities</label>
-              <Input name="amenities" placeholder="Pool, Garden, Garage (comma separated)" />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Images</label>
-              <ImageUpload
-                userId={user.id}
-                images={uploadedImages}
-                onImagesChange={setUploadedImages}
-                maxImages={10}
-              />
-            </div>
-            <Button type="submit" className="bg-accent text-accent-foreground hover:bg-emerald-light">
-              Publish Listing
-            </Button>
-          </form>
+          <PropertyForm userId={user.id} onSubmit={handleCreate} submitLabel="Publish Listing" />
+        )}
+
+        {/* Edit listing */}
+        {tab === "edit" && editData && (
+          <div>
+            <button
+              onClick={() => { setTab("manage"); setEditingId(null); setEditData(null); }}
+              className="mt-4 text-sm text-muted-foreground hover:text-accent transition-colors"
+            >
+              ← Back to listings
+            </button>
+            <PropertyForm
+              key={editingId}
+              userId={user.id}
+              initialData={editData}
+              onSubmit={handleUpdate}
+              submitLabel="Save Changes"
+            />
+          </div>
         )}
 
         {/* Manage */}
@@ -253,7 +258,7 @@ export default function SellerDashboard() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button size="icon" variant="ghost" onClick={() => toast({ title: "Edit mode" })}>
+                          <Button size="icon" variant="ghost" onClick={() => handleEdit(p.id)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleDelete(p.id)}>
