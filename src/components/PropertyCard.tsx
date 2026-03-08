@@ -1,12 +1,15 @@
 import { Heart, Bed, Bath, Maximize } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useSaveProperty } from "@/hooks/useSaveProperty";
 import type { Property } from "@/data/mockData";
 import { formatPrice } from "@/data/mockData";
 
 export default function PropertyCard({ property }: { property: Property }) {
-  const [liked, setLiked] = useState(false);
+  const { saved, toggle, isLoggedIn } = useSaveProperty(property.id);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   return (
     <Link
