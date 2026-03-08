@@ -145,6 +145,8 @@ export const properties: Property[] = [
     sellerName: "Sarah Chen",
     createdAt: "2026-02-28",
     views: 1567,
+    latitude: 33.4942,
+    longitude: -111.9261,
   },
   {
     id: "6",
