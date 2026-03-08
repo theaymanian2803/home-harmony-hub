@@ -82,7 +82,7 @@ export default function SellerDashboard() {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Listing Published!", description: "Your property is now live." });
+      toast({ title: isAdmin ? "Listing Published!" : "Listing Submitted!", description: isAdmin ? "Your property is now live." : "Your listing is pending admin approval." });
       await refreshListings();
       setTab("manage");
     }

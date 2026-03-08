@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Users, Home, Plus, Trash2, Edit, Shield, Eye,
+  LayoutDashboard, Users, Home, Plus, Trash2, Shield, Eye, CheckCircle, XCircle, Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -16,8 +14,9 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
+import PropertyForm from "@/components/PropertyForm";
 
-type Tab = "overview" | "properties" | "users" | "add-property";
+type Tab = "overview" | "properties" | "pending" | "users" | "add-property";
 
 interface PropertyRow {
   id: string;
@@ -54,19 +53,42 @@ export default function AdminDashboard() {
     }
   }, [user, isAdmin, authLoading, adminLoading, navigate]);
 
+  const refreshData = async () => {
+    const [propRes, userRes] = await Promise.all([
+      supabase.from("properties").select("id, title, price, views, status, user_id, city, state"),
+      supabase.from("profiles").select("id, email, full_name, created_at"),
+    ]);
+    setAllProperties((propRes.data as PropertyRow[]) || []);
+    setAllUsers((userRes.data as ProfileRow[]) || []);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    if (!isAdmin) return;
-    const fetchData = async () => {
-      const [propRes, userRes] = await Promise.all([
-        supabase.from("properties").select("id, title, price, views, status, user_id, city, state"),
-        supabase.from("profiles").select("id, email, full_name, created_at"),
-      ]);
-      setAllProperties((propRes.data as PropertyRow[]) || []);
-      setAllUsers((userRes.data as ProfileRow[]) || []);
-      setLoading(false);
-    };
-    fetchData();
+    if (isAdmin) refreshData();
   }, [isAdmin]);
+
+  const pendingProperties = allProperties.filter((p) => p.status === "pending");
+  const activeProperties = allProperties.filter((p) => p.status === "active");
+
+  const handleApprove = async (id: string) => {
+    const { error } = await supabase.from("properties").update({ status: "active" }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Property Approved", description: "The listing is now live." });
+      setAllProperties((prev) => prev.map((p) => (p.id === id ? { ...p, status: "active" } : p)));
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    const { error } = await supabase.from("properties").update({ status: "rejected" }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Property Rejected", variant: "destructive" });
+      setAllProperties((prev) => prev.map((p) => (p.id === id ? { ...p, status: "rejected" } : p)));
+    }
+  };
 
   const handleDeleteProperty = async (id: string) => {
     await supabase.from("properties").delete().eq("id", id);
@@ -74,34 +96,38 @@ export default function AdminDashboard() {
     toast({ title: "Property deleted", variant: "destructive" });
   };
 
-  const handleCreateProperty = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleCreateProperty = async (formData: any) => {
     if (!user) return;
-    const form = new FormData(e.currentTarget);
     const { error } = await supabase.from("properties").insert({
       user_id: user.id,
-      title: form.get("title") as string,
-      description: form.get("description") as string,
-      price: Number(form.get("price")),
-      beds: Number(form.get("beds")),
-      baths: Number(form.get("baths")),
-      city: form.get("city") as string,
-      state: form.get("state") as string,
-      amenities: (form.get("amenities") as string)?.split(",").map((s) => s.trim()).filter(Boolean) || [],
+      ...formData,
+      status: "active",
     });
-
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Property Created!" });
-      const { data } = await supabase.from("properties").select("id, title, price, views, status, user_id, city, state");
-      setAllProperties((data as PropertyRow[]) || []);
+      await refreshData();
       setTab("properties");
     }
   };
 
-  const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600"><Clock className="mr-1 h-3 w-3" />Pending</Badge>;
+      case "active":
+        return <Badge variant="secondary" className="bg-accent/10 text-accent"><CheckCircle className="mr-1 h-3 w-3" />Active</Badge>;
+      case "rejected":
+        return <Badge variant="secondary" className="bg-destructive/10 text-destructive"><XCircle className="mr-1 h-3 w-3" />Rejected</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  const tabs: { id: Tab; label: string; icon: React.ElementType; count?: number }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
+    { id: "pending", label: "Pending Approval", icon: Clock, count: pendingProperties.length },
     { id: "properties", label: "All Properties", icon: Home },
     { id: "users", label: "Users", icon: Users },
     { id: "add-property", label: "Add Property", icon: Plus },
@@ -117,9 +143,9 @@ export default function AdminDashboard() {
           <Shield className="h-6 w-6 text-accent" />
           <h1 className="font-display text-3xl font-bold text-foreground">Admin Dashboard</h1>
         </div>
-        <p className="text-sm text-muted-foreground">Manage all properties, users, and subscriptions</p>
+        <p className="text-sm text-muted-foreground">Manage all properties, users, and approvals</p>
 
-        <div className="mt-6 flex gap-2 border-b border-border pb-2">
+        <div className="mt-6 flex flex-wrap gap-2 border-b border-border pb-2">
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -129,19 +155,29 @@ export default function AdminDashboard() {
               }`}
             >
               <t.icon className="h-4 w-4" /> {t.label}
+              {t.count !== undefined && t.count > 0 && (
+                <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-yellow-500 px-1.5 text-xs font-bold text-white">
+                  {t.count}
+                </span>
+              )}
             </button>
           ))}
         </div>
 
         {/* Overview */}
         {tab === "overview" && (
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:grid-cols-4">
             {[
               { label: "Total Properties", value: allProperties.length, icon: Home },
+              { label: "Pending Approval", value: pendingProperties.length, icon: Clock },
               { label: "Total Users", value: allUsers.length, icon: Users },
               { label: "Total Views", value: allProperties.reduce((s, p) => s + (p.views || 0), 0).toLocaleString(), icon: Eye },
             ].map((stat) => (
-              <div key={stat.label} className="rounded-lg border border-border bg-card p-6">
+              <div key={stat.label} className="rounded-lg border border-border bg-card p-6 cursor-pointer hover:border-accent/50 transition-colors" onClick={() => {
+                if (stat.label === "Pending Approval") setTab("pending");
+                else if (stat.label === "Total Properties") setTab("properties");
+                else if (stat.label === "Total Users") setTab("users");
+              }}>
                 <div className="flex items-center gap-3">
                   <div className="rounded-lg bg-accent/10 p-2"><stat.icon className="h-5 w-5 text-accent" /></div>
                   <div>
@@ -151,6 +187,50 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Pending Approval */}
+        {tab === "pending" && (
+          <div className="mt-8 overflow-x-auto rounded-lg border border-border bg-card">
+            {pendingProperties.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                <CheckCircle className="mx-auto h-8 w-8 text-accent mb-2" />
+                <p>No pending properties. All caught up!</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingProperties.map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell className="font-medium">{p.title}</TableCell>
+                      <TableCell>{p.city}, {p.state}</TableCell>
+                      <TableCell>{formatPrice(p.price)}</TableCell>
+                      <TableCell>{getStatusBadge(p.status)}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button size="sm" variant="outline" className="text-accent border-accent/30 hover:bg-accent hover:text-accent-foreground" onClick={() => handleApprove(p.id)}>
+                            <CheckCircle className="mr-1 h-4 w-4" /> Approve
+                          </Button>
+                          <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground" onClick={() => handleReject(p.id)}>
+                            <XCircle className="mr-1 h-4 w-4" /> Reject
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         )}
 
@@ -178,13 +258,25 @@ export default function AdminDashboard() {
                       <TableCell>{p.city}, {p.state}</TableCell>
                       <TableCell>{formatPrice(p.price)}</TableCell>
                       <TableCell>{(p.views || 0).toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="bg-accent/10 text-accent">{p.status}</Badge>
-                      </TableCell>
+                      <TableCell>{getStatusBadge(p.status)}</TableCell>
                       <TableCell className="text-right">
-                        <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleDeleteProperty(p.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex justify-end gap-1">
+                          {p.status === "pending" && (
+                            <Button size="icon" variant="ghost" className="text-accent" onClick={() => handleApprove(p.id)}>
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {p.status !== "rejected" && p.status !== "pending" ? null : (
+                            p.status === "pending" && (
+                              <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleReject(p.id)}>
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            )
+                          )}
+                          <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleDeleteProperty(p.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -223,48 +315,8 @@ export default function AdminDashboard() {
         )}
 
         {/* Add Property */}
-        {tab === "add-property" && (
-          <form onSubmit={handleCreateProperty} className="mt-8 max-w-2xl space-y-5">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Title</label>
-              <Input name="title" placeholder="e.g. Modern Luxury Villa" required />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Description</label>
-              <Textarea name="description" placeholder="Describe the property…" rows={4} required />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Price ($)</label>
-                <Input name="price" type="number" placeholder="500000" required />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Beds</label>
-                <Input name="beds" type="number" placeholder="3" required />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">Baths</label>
-                <Input name="baths" type="number" placeholder="2" required />
-              </div>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">City</label>
-                <Input name="city" placeholder="Los Angeles" required />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">State</label>
-                <Input name="state" placeholder="CA" required />
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-foreground">Amenities</label>
-              <Input name="amenities" placeholder="Pool, Garden, Garage (comma separated)" />
-            </div>
-            <Button type="submit" className="bg-accent text-accent-foreground hover:bg-emerald-light">
-              Publish Property
-            </Button>
-          </form>
+        {tab === "add-property" && user && (
+          <PropertyForm userId={user.id} onSubmit={handleCreateProperty} submitLabel="Publish Property" />
         )}
       </div>
     </div>
