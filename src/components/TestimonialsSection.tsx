@@ -26,32 +26,41 @@ const testimonials = [
 
 export default function TestimonialsSection() {
   return (
-    <section className="section-padding bg-background">
-      <div className="container mx-auto px-4">
+    <section className="section-padding bg-secondary/30 relative overflow-hidden">
+      {/* Decorative shapes */}
+      <div className="absolute top-10 left-10 h-40 w-40 shape-blob bg-accent/5 animate-float" />
+      <div className="absolute bottom-10 right-20 h-28 w-28 shape-blob-3 bg-caramel/5 animate-float-slow" />
+      <div className="absolute top-1/2 left-1/3 h-8 w-8 rounded-full bg-accent/10 animate-float" style={{ animationDelay: "3s" }} />
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center">
-          <span className="inline-block rounded-full bg-accent/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-accent">
+          <span className="neu-card-sm inline-block px-5 py-2 text-sm font-semibold uppercase tracking-wider text-accent">
             Testimonials
           </span>
-          <h2 className="mt-4 font-display text-3xl font-bold text-foreground md:text-4xl">
-            Loved by Thousands
+          <h2 className="mt-6 font-display text-3xl font-bold text-foreground md:text-5xl">
+            Loved by <span className="text-gradient-chocolate">Thousands</span>
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Real stories from real people who found their perfect property on EstateHub.
           </p>
         </div>
 
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <div key={t.name} className="relative rounded-2xl border border-border bg-card p-8">
-              <Quote className="absolute right-6 top-6 h-10 w-10 text-accent/10" />
-              <div className="mb-4 flex gap-0.5">
+        <div className="mt-16 grid gap-8 md:grid-cols-3">
+          {testimonials.map((t, i) => (
+            <div key={t.name} className="neu-card p-8 relative transition-all duration-300 hover:translate-y-[-4px]">
+              <Quote className="absolute right-6 top-6 h-12 w-12 text-accent/8" />
+              
+              {/* Stars */}
+              <div className="mb-5 flex gap-1">
                 {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
+                  <Star key={i} className="h-4 w-4 fill-caramel text-caramel" />
                 ))}
               </div>
+              
               <p className="text-sm leading-relaxed text-muted-foreground italic">"{t.quote}"</p>
-              <div className="mt-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 font-display text-sm font-bold text-accent">
+              
+              <div className="mt-8 flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl gradient-caramel font-display text-sm font-bold text-accent-foreground shadow-md">
                   {t.avatar}
                 </div>
                 <div>
