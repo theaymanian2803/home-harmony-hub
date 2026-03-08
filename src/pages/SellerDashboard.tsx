@@ -70,7 +70,9 @@ export default function SellerDashboard() {
     if (user) refreshListings();
   }, [user]);
 
-  const atLimit = !isAdmin && !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
+  const currentPlan = details?.plan || "free";
+  const listingLimit = getListingLimit(currentPlan);
+  const atLimit = !isAdmin && myListings.length >= listingLimit;
 
   const visibleTabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
