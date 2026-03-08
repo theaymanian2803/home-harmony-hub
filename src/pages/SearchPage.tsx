@@ -191,8 +191,8 @@ export default function SearchPage() {
         </div>
 
         <div className="flex gap-8">
-          <aside className="hidden w-64 shrink-0 md:block">
-            <div className="sticky top-24 rounded-lg border border-border bg-card p-5">
+          <aside className="hidden w-64 min-w-[16rem] max-w-[16rem] shrink-0 md:block">
+            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-lg border border-border bg-card p-5">
               <h3 className="mb-4 font-display text-lg font-semibold text-foreground">Filters</h3>
               <FilterPanel />
             </div>
