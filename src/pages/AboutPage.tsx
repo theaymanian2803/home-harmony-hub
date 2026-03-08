@@ -22,9 +22,9 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Hero */}
-      <section className="gradient-navy pt-32 pb-20">
+      <section className="gradient-chocolate pt-32 pb-20">
         <div className="container mx-auto px-4 text-center">
-          <span className="inline-block rounded-full bg-accent/10 px-4 py-1.5 text-sm font-semibold text-accent">
+          <span className="inline-block rounded-full bg-caramel/20 px-4 py-1.5 text-sm font-semibold text-caramel">
             Our Story
           </span>
           <h1 className="mt-4 font-display text-4xl font-bold text-primary-foreground md:text-6xl">
@@ -41,7 +41,7 @@ export default function AboutPage() {
       <section className="section-padding">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
+            <div className="mx-auto mb-6 neu-pressed flex h-16 w-16 items-center justify-center rounded-2xl">
               <Building2 className="h-8 w-8 text-accent" />
             </div>
             <h2 className="font-display text-3xl font-bold text-foreground">Our Mission</h2>
@@ -65,8 +65,8 @@ export default function AboutPage() {
           </div>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {values.map((v) => (
-              <div key={v.title} className="rounded-2xl border border-border bg-card p-8 text-center">
-                <div className="mx-auto mb-4 inline-flex rounded-xl bg-accent/10 p-3">
+              <div key={v.title} className="neu-card p-8 text-center transition-all duration-300 hover:translate-y-[-4px]">
+                <div className="mx-auto mb-4 inline-flex rounded-xl neu-pressed p-3">
                   <v.icon className="h-6 w-6 text-accent" />
                 </div>
                 <h3 className="font-display text-lg font-bold text-foreground">{v.title}</h3>
@@ -88,8 +88,8 @@ export default function AboutPage() {
           </div>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {team.map((t) => (
-              <div key={t.name} className="rounded-2xl border border-border bg-card p-6 text-center group hover:border-accent/30 transition-colors">
-                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-accent/10 font-display text-xl font-bold text-accent group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
+              <div key={t.name} className="neu-card p-6 text-center group transition-all duration-300 hover:translate-y-[-4px]">
+                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full gradient-caramel font-display text-xl font-bold text-accent-foreground shadow-md">
                   {t.initials}
                 </div>
                 <h3 className="font-display text-base font-bold text-foreground">{t.name}</h3>
@@ -101,7 +101,7 @@ export default function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="section-padding gradient-navy">
+      <section className="section-padding gradient-chocolate">
         <div className="container mx-auto px-4">
           <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -111,7 +111,7 @@ export default function AboutPage() {
               { value: "50", label: "States Covered" },
             ].map((s) => (
               <div key={s.label}>
-                <p className="font-display text-4xl font-bold text-accent">{s.value}</p>
+                <p className="font-display text-4xl font-bold text-caramel">{s.value}</p>
                 <p className="mt-1 text-sm text-primary-foreground/60">{s.label}</p>
               </div>
             ))}

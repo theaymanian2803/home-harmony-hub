@@ -176,7 +176,7 @@ export default function SellerDashboard() {
                 <p className="text-xs text-muted-foreground">Upgrade to Seller Pro for unlimited listings, analytics & more.</p>
               </div>
             </div>
-            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-emerald-light" asChild>
+            <Button size="sm" className="gradient-caramel text-accent-foreground hover:opacity-90" asChild>
               <Link to="/pricing">Upgrade <ArrowRight className="ml-1 h-3 w-3" /></Link>
             </Button>
           </div>

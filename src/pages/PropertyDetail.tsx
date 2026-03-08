@@ -217,7 +217,7 @@ export default function PropertyDetail() {
                   <Input type="email" placeholder="Email Address" required />
                   <Input placeholder="Phone (optional)" />
                   <Textarea placeholder="I'm interested in this property…" rows={3} required />
-                  <Button className="w-full bg-accent text-accent-foreground hover:bg-emerald-light" type="submit">
+                  <Button className="w-full gradient-caramel text-accent-foreground hover:opacity-90" type="submit">
                     Send Message
                   </Button>
                 </form>

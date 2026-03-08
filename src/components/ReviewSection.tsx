@@ -86,7 +86,7 @@ export default function ReviewSection({
         />
         <Button
           size="sm"
-          className="mt-3 bg-accent text-accent-foreground hover:bg-emerald-light"
+          className="mt-3 gradient-caramel text-accent-foreground hover:opacity-90"
           onClick={handleSubmit}
         >
           Submit Review

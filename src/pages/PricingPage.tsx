@@ -142,7 +142,7 @@ export default function PricingPage() {
             ) : (
               <Button
                 size="lg"
-                className="mt-8 w-full bg-accent text-accent-foreground hover:bg-emerald-light"
+                className="mt-8 w-full gradient-caramel text-accent-foreground hover:opacity-90"
                 onClick={handleSubscribe}
                 disabled={subscribing}
               >

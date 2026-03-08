@@ -87,7 +87,7 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
         <label className="mb-1 block text-sm font-medium text-foreground">Images</label>
         <ImageUpload userId={userId} images={images} onImagesChange={setImages} maxImages={10} />
       </div>
-      <Button type="submit" disabled={submitting} className="bg-accent text-accent-foreground hover:bg-emerald-light">
+      <Button type="submit" disabled={submitting} className="gradient-caramel text-accent-foreground hover:opacity-90">
         {submitting ? "Saving…" : submitLabel}
       </Button>
     </form>
