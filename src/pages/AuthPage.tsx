@@ -68,7 +68,7 @@ export default function AuthPage() {
               <label className="mb-1 block text-sm font-medium text-foreground">Password</label>
               <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-emerald-light" disabled={loading}>
+            <Button type="submit" className="w-full gradient-caramel text-accent-foreground hover:opacity-90" disabled={loading}>
               {loading ? "Please wait…" : isLogin ? "Sign In" : "Create Account"}
             </Button>
           </form>
