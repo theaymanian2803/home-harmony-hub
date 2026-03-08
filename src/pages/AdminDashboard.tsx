@@ -15,7 +15,7 @@ import AdminListingControls from "@/components/AdminListingControls";
 import AdminLandingControls from "@/components/AdminLandingControls";
 import { useTranslation } from "react-i18next";
 
-type Tab = "overview" | "properties" | "pending" | "users" | "add-property" | "listing-controls";
+type Tab = "overview" | "properties" | "pending" | "users" | "add-property" | "listing-controls" | "landing-page";
 interface PropertyRow { id: string; title: string; price: number; views: number; status: string; user_id: string; city: string; state: string; }
 interface ProfileRow { id: string; email: string; full_name: string; created_at: string; }
 
