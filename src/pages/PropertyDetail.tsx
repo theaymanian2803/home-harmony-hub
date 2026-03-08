@@ -13,6 +13,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ReviewSection from "@/components/ReviewSection";
 import PropertyMap from "@/components/PropertyMap";
+import Lightbox from "@/components/Lightbox";
 import { properties as mockProperties, reviews, formatPrice, type Property } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 
