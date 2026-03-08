@@ -6,59 +6,59 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 50% 15%;
+    --background: 30 25% 96%;
+    --foreground: 20 40% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 50% 15%;
+    --card: 30 20% 99%;
+    --card-foreground: 20 40% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 50% 15%;
+    --popover: 30 20% 99%;
+    --popover-foreground: 20 40% 15%;
 
-    --primary: 215 50% 23%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 20 45% 22%;
+    --primary-foreground: 30 30% 95%;
 
-    --secondary: 210 20% 95%;
-    --secondary-foreground: 215 50% 23%;
+    --secondary: 30 20% 92%;
+    --secondary-foreground: 20 45% 22%;
 
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 30 15% 90%;
+    --muted-foreground: 20 15% 48%;
 
-    --accent: 160 84% 32%;
+    --accent: 30 70% 42%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 30 30% 98%;
 
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 215 50% 23%;
+    --border: 30 18% 85%;
+    --input: 30 18% 85%;
+    --ring: 20 45% 22%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 215 50% 18%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 160 84% 39%;
+    --sidebar-background: 20 45% 16%;
+    --sidebar-foreground: 30 20% 90%;
+    --sidebar-primary: 30 70% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 50% 25%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 215 40% 28%;
-    --sidebar-ring: 160 84% 39%;
+    --sidebar-accent: 20 45% 24%;
+    --sidebar-accent-foreground: 30 20% 90%;
+    --sidebar-border: 20 35% 26%;
+    --sidebar-ring: 30 70% 48%;
 
     /* Custom tokens */
-    --emerald: 160 84% 32%;
-    --emerald-light: 160 70% 45%;
-    --navy: 215 50% 23%;
-    --navy-dark: 215 55% 15%;
-    --navy-light: 215 40% 35%;
-    --gold: 40 90% 55%;
+    --emerald: 30 70% 42%;
+    --emerald-light: 30 65% 52%;
+    --navy: 20 45% 22%;
+    --navy-dark: 20 50% 14%;
+    --navy-light: 20 35% 34%;
+    --gold: 38 85% 55%;
 
     --font-display: 'Sora', sans-serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
 
-    --shadow-soft: 0 2px 15px -3px hsl(215 50% 23% / 0.08), 0 4px 6px -4px hsl(215 50% 23% / 0.05);
-    --shadow-card: 0 4px 25px -5px hsl(215 50% 23% / 0.1), 0 8px 10px -6px hsl(215 50% 23% / 0.05);
-    --shadow-elevated: 0 10px 40px -10px hsl(215 50% 23% / 0.15);
+    --shadow-soft: 0 2px 15px -3px hsl(20 45% 22% / 0.08), 0 4px 6px -4px hsl(20 45% 22% / 0.05);
+    --shadow-card: 0 4px 25px -5px hsl(20 45% 22% / 0.1), 0 8px 10px -6px hsl(20 45% 22% / 0.05);
+    --shadow-elevated: 0 10px 40px -10px hsl(20 45% 22% / 0.15);
   }
 
   .dark {
