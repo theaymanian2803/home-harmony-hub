@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard, PartyPopper, X, Heart,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard, PartyPopper, X, Heart, CheckCircle, FileText,
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
