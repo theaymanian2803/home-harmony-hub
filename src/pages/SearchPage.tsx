@@ -188,8 +188,17 @@ export default function SearchPage() {
               <SlidersHorizontal className="mr-1 h-4 w-4" />
               Filters
             </Button>
-            <Button variant="outline" size="sm" disabled>
-              <Map className="mr-1 h-4 w-4" /> Map View
+            <Button
+              variant={mapView ? "default" : "outline"}
+              size="sm"
+              onClick={() => setMapView(!mapView)}
+              className={mapView ? "gradient-caramel text-accent-foreground" : ""}
+            >
+              {mapView ? (
+                <><LayoutGrid className="mr-1 h-4 w-4" /> Grid View</>
+              ) : (
+                <><Map className="mr-1 h-4 w-4" /> Map View</>
+              )}
             </Button>
           </div>
         </div>
