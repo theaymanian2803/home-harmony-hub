@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      listing_options: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          sort_order: number
+          value: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          value: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          value?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
