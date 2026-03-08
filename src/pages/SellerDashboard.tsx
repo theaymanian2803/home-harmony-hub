@@ -111,8 +111,8 @@ export default function SellerDashboard() {
     <div className="min-h-screen bg-secondary/30">
       <Navbar />
       <div className="container mx-auto px-4 pb-16 pt-24">
-        <h1 className="font-display text-3xl font-bold text-foreground">{t("dashboard.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
+        <h1 className="font-display text-4xl font-bold text-foreground">{t("dashboard.title")}</h1>
+        <p className="text-base text-foreground/70">{t("dashboard.subtitle")}</p>
 
         <div className="mt-6 flex gap-2 border-b border-border pb-2">
           {visibleTabs.map((tb) => (
