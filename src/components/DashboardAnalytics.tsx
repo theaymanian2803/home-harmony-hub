@@ -27,7 +27,7 @@ const COLORS = [
   "hsl(25, 55%, 58%)",   // chocolate-light
 ];
 
-export default function DashboardAnalytics({ listings }: Props) {
+export default function DashboardAnalytics({ listings, savesData = [] }: Props) {
   const viewsData = useMemo(() =>
     listings
       .sort((a, b) => (b.views || 0) - (a.views || 0))
