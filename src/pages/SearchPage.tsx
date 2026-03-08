@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal, X, Map, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -13,12 +14,16 @@ import { supabase } from "@/integrations/supabase/client";
 const allAmenities = ["Pool", "Garden", "Garage", "Fireplace", "Smart Home", "Terrace", "Gym", "Concierge"];
 
 export default function SearchPage() {
+  const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mapView, setMapView] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 4000000]);
   const [beds, setBeds] = useState(0);
   const [baths, setBaths] = useState(0);
-  const [selectedType, setSelectedType] = useState("");
+  const [selectedType, setSelectedType] = useState(() => {
+    const t = searchParams.get("type");
+    return t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : "";
+  });
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [allProperties, setAllProperties] = useState<Property[]>(mockProperties);
 
