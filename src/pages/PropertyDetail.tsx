@@ -13,6 +13,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ReviewSection from "@/components/ReviewSection";
 import PropertyMap from "@/components/PropertyMap";
+import Lightbox from "@/components/Lightbox";
 import { properties as mockProperties, reviews, formatPrice, type Property } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -39,6 +40,7 @@ export default function PropertyDetail() {
   const [liked, setLiked] = useState(false);
   const [property, setProperty] = useState<ExtendedProperty | null | undefined>(undefined);
   const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -142,7 +144,7 @@ export default function PropertyDetail() {
 
         {/* Image gallery */}
         <div className="relative mt-2 overflow-hidden rounded-xl">
-          <img src={property.images[currentImage]} alt={property.title} className="aspect-[16/7] w-full object-cover" />
+          <img src={property.images[currentImage]} alt={property.title} className="aspect-[16/7] w-full object-cover cursor-zoom-in" onClick={() => setLightboxOpen(true)} />
           {hasMultipleImages && (
             <>
               <button onClick={() => setCurrentImage((prev) => (prev === 0 ? property.images.length - 1 : prev - 1))} className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-card/80 p-2 backdrop-blur-sm transition-colors hover:bg-card">
@@ -304,6 +306,14 @@ export default function PropertyDetail() {
         </div>
       </div>
       <Footer />
+      {lightboxOpen && (
+        <Lightbox
+          images={property.images}
+          currentIndex={currentImage}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={(i) => setCurrentImage(i)}
+        />
+      )}
     </div>
   );
 }
