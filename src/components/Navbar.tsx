@@ -135,6 +135,9 @@ export default function Navbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
+                  <Link to="/profile">My Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link to="/dashboard">Seller Dashboard</Link>
                 </DropdownMenuItem>
                 {isAdmin && (
@@ -203,8 +206,14 @@ export default function Navbar() {
             ))}
 
             {user && (
+              <Link to="/profile" onClick={() => setMobileOpen(false)}
+                className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50">
+                My Profile
+              </Link>
+            )}
+            {user && (
               <Link to="/dashboard" onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground">
+                className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50">
                 Seller Dashboard
               </Link>
             )}
