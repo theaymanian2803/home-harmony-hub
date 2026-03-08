@@ -73,15 +73,17 @@ export default function SearchPage() {
   }, []);
 
   const filtered = useMemo(() => {
-    return allProperties.filter((p) => {
-      if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
+    const result = allProperties.filter((p) => {
       if (beds > 0 && p.beds < beds) return false;
       if (baths > 0 && p.baths < baths) return false;
       if (selectedType && p.type !== selectedType) return false;
       if (selectedAmenities.length > 0 && !selectedAmenities.every((a) => p.amenities.includes(a))) return false;
       return true;
     });
-  }, [allProperties, priceRange, beds, baths, selectedType, selectedAmenities]);
+    if (priceSort === "asc") result.sort((a, b) => a.price - b.price);
+    if (priceSort === "desc") result.sort((a, b) => b.price - a.price);
+    return result;
+  }, [allProperties, priceSort, beds, baths, selectedType, selectedAmenities]);
 
   const toggleAmenity = (a: string) =>
     setSelectedAmenities((prev) =>
