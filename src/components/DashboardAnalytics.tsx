@@ -76,7 +76,7 @@ export default function DashboardAnalytics({ listings }: Props) {
       <div className="grid gap-6 md:grid-cols-2">
         {/* Views by Property */}
         <div className="rounded-xl border border-border bg-card p-5">
-          <h4 className="font-display text-lg font-semibold text-foreground mb-4">Views by Property</h4>
+          <h4 className="font-display text-xl font-bold text-foreground mb-4">Views by Property</h4>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={viewsData}>
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(25, 15%, 45%)" }} angle={-20} textAnchor="end" height={60} />
