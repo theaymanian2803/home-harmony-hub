@@ -40,6 +40,7 @@ export default function PropertyDetail() {
   const [liked, setLiked] = useState(false);
   const [property, setProperty] = useState<ExtendedProperty | null | undefined>(undefined);
   const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     const fetchProperty = async () => {
