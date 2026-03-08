@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Search, MessageSquare, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const containerVariants = {
   hidden: {},
@@ -15,27 +15,27 @@ const cardVariants = {
 };
 
 export default function HowItWorks() {
-  const { t } = useTranslation();
+  const { getValue } = useSiteContent();
 
   const steps = [
     {
       step: "01",
-      title: t("howItWorks.searchTitle"),
-      desc: t("howItWorks.searchDesc"),
+      title: "Search & Discover",
+      desc: "Browse thousands of verified listings with our powerful search tools and filters.",
       icon: Search,
       accent: "from-[hsl(var(--chocolate))] to-[hsl(var(--caramel))]",
     },
     {
       step: "02",
-      title: t("howItWorks.connectTitle"),
-      desc: t("howItWorks.connectDesc"),
+      title: "Connect & Negotiate",
+      desc: "Contact sellers directly and schedule viewings — all within our secure platform.",
       icon: MessageSquare,
       accent: "from-[hsl(var(--caramel))] to-[hsl(var(--chocolate-light))]",
     },
     {
       step: "03",
-      title: t("howItWorks.closeTitle"),
-      desc: t("howItWorks.closeDesc"),
+      title: "Close the Deal",
+      desc: "Complete your transaction with confidence using our guided closing process.",
       icon: Key,
       accent: "from-[hsl(var(--chocolate-light))] to-[hsl(var(--chocolate))]",
     },
@@ -64,16 +64,16 @@ export default function HowItWorks() {
           className="text-center"
         >
           <span className="inline-block rounded-full border border-[hsl(var(--caramel)/0.3)] bg-[hsl(var(--caramel)/0.08)] px-5 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[hsl(var(--caramel))]">
-            {t("howItWorks.badge")}
+            {getValue("how_badge", "Simple Process")}
           </span>
           <h2 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-[hsl(var(--cream))] md:text-6xl">
-            {t("howItWorks.titleStart")}{" "}
+            {getValue("how_title_start", "How It ")}{" "}
             <span className="bg-gradient-to-r from-[hsl(var(--caramel))] to-[hsl(var(--chocolate-light))] bg-clip-text text-transparent">
-              {t("howItWorks.titleHighlight")}
+              {getValue("how_title_highlight", "Works")}
             </span>
           </h2>
           <p className="mx-auto mt-5 max-w-lg text-base text-[hsl(var(--latte)/0.6)] md:text-lg">
-            {t("howItWorks.subtitle")}
+            {getValue("how_subtitle", "Three simple steps to find and secure your perfect property.")}
           </p>
         </motion.div>
 
@@ -119,7 +119,7 @@ export default function HowItWorks() {
             asChild
           >
             <Link to="/search">
-              {t("howItWorks.startBrowsing")} <ArrowRight className="ml-2 h-5 w-5" />
+              Start Browsing <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </motion.div>

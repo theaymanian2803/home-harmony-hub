@@ -1,16 +1,16 @@
 import { Search, Shield, TrendingUp, Clock, Headphones, Globe } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export default function WhyChooseUs() {
-  const { t } = useTranslation();
+  const { getValue } = useSiteContent();
 
   const features = [
-    { icon: Search, title: t("whyUs.smartSearch"), description: t("whyUs.smartSearchDesc") },
-    { icon: Shield, title: t("whyUs.verifiedListings"), description: t("whyUs.verifiedListingsDesc") },
-    { icon: TrendingUp, title: t("whyUs.marketInsights"), description: t("whyUs.marketInsightsDesc") },
-    { icon: Clock, title: t("whyUs.quickListing"), description: t("whyUs.quickListingDesc") },
-    { icon: Headphones, title: t("whyUs.dedicatedSupport"), description: t("whyUs.dedicatedSupportDesc") },
-    { icon: Globe, title: t("whyUs.nationwideCoverage"), description: t("whyUs.nationwideCoverageDesc") },
+    { icon: Search, title: "Smart Search", description: "Find properties fast with our AI-powered search and advanced filters." },
+    { icon: Shield, title: "Verified Listings", description: "Every listing is verified to ensure accuracy and authenticity." },
+    { icon: TrendingUp, title: "Market Insights", description: "Get real-time market data to make informed decisions." },
+    { icon: Clock, title: "Quick Listing", description: "List your property in minutes with our streamlined process." },
+    { icon: Headphones, title: "Dedicated Support", description: "Our team is here to help you every step of the way." },
+    { icon: Globe, title: "Nationwide Coverage", description: "Access properties across the entire country." },
   ];
 
   return (
@@ -21,14 +21,14 @@ export default function WhyChooseUs() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center">
           <span className="neu-card-sm inline-block px-5 py-2 text-sm font-semibold uppercase tracking-wider text-accent">
-            {t("whyUs.badge")}
+            {getValue("why_badge", "Why Choose Us")}
           </span>
           <h2 className="mt-6 font-display text-3xl font-bold text-foreground md:text-5xl">
-            {t("whyUs.titleStart")}
-            <span className="text-gradient-chocolate">{t("whyUs.titleHighlight")}</span>
+            {getValue("why_title_start", "Why People ")}
+            <span className="text-gradient-chocolate">{getValue("why_title_highlight", "Choose Us")}</span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            {t("whyUs.subtitle")}
+            {getValue("why_subtitle", "We combine cutting-edge technology with deep real estate expertise.")}
           </p>
         </div>
 

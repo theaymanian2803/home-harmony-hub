@@ -1,32 +1,10 @@
 import { Star, Quote } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
-const testimonials = [
-  {
-    name: "Sarah & Mark Thompson",
-    role: "First-time Buyers",
-    quote: "EstateHub made finding our dream home effortless. The verified listings gave us confidence, and we closed in just 3 weeks!",
-    rating: 5,
-    avatar: "ST",
-  },
-  {
-    name: "David Chen",
-    role: "Property Investor",
-    quote: "As an investor, I need reliable data. EstateHub's analytics and market insights helped me make smart purchasing decisions.",
-    rating: 5,
-    avatar: "DC",
-  },
-  {
-    name: "Emily Rodriguez",
-    role: "Home Seller",
-    quote: "I listed my property and had 3 offers within a week. The dashboard made managing everything incredibly simple.",
-    rating: 5,
-    avatar: "ER",
-  },
-];
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export default function TestimonialsSection() {
-  const { t } = useTranslation();
+  const { activeTestimonials } = useSiteContent();
+
+  if (activeTestimonials.length === 0) return null;
 
   return (
     <section className="section-padding bg-secondary/30 relative overflow-hidden">
@@ -37,19 +15,19 @@ export default function TestimonialsSection() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center">
           <span className="neu-card-sm inline-block px-5 py-2 text-sm font-semibold uppercase tracking-wider text-accent">
-            {t("testimonials.badge")}
+            Testimonials
           </span>
           <h2 className="mt-6 font-display text-3xl font-bold text-foreground md:text-5xl">
-            {t("testimonials.title")} <span className="text-gradient-chocolate">{t("testimonials.titleHighlight")}</span>
+            What Our Clients <span className="text-gradient-chocolate">Say About Us</span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            {t("testimonials.subtitle")}
+            Real stories from real people who found their perfect property.
           </p>
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {testimonials.map((te) => (
-            <div key={te.name} className="neu-card p-8 relative transition-all duration-300 hover:translate-y-[-4px]">
+          {activeTestimonials.map((te) => (
+            <div key={te.id} className="neu-card p-8 relative transition-all duration-300 hover:translate-y-[-4px]">
               <Quote className="absolute right-6 top-6 h-12 w-12 text-accent/8" />
               <div className="mb-5 flex gap-1">
                 {Array.from({ length: te.rating }).map((_, i) => (
