@@ -24,6 +24,8 @@ export interface Property {
   sellerName: string;
   createdAt: string;
   views: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Review {
