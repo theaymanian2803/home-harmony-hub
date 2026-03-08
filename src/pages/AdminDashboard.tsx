@@ -12,6 +12,7 @@ import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
 import PropertyForm from "@/components/PropertyForm";
 import AdminListingControls from "@/components/AdminListingControls";
+import AdminLandingControls from "@/components/AdminLandingControls";
 import { useTranslation } from "react-i18next";
 
 type Tab = "overview" | "properties" | "pending" | "users" | "add-property" | "listing-controls";
