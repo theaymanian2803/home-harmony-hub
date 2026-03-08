@@ -36,9 +36,10 @@ export default function PricingPage() {
   // Handle PayPal return
   useEffect(() => {
     const status = searchParams.get("status");
-    const subId = searchParams.get("subscription_id");
+    const subId = searchParams.get("subscription_id") || localStorage.getItem("pending_subscription_id");
 
     if (status === "success" && subId) {
+      localStorage.removeItem("pending_subscription_id");
       activateSubscription(subId).then((result) => {
         if (result.status === "active") {
           toast({ title: "Subscription Active!", description: "Welcome to Seller Pro! 🎉" });
@@ -49,6 +50,7 @@ export default function PricingPage() {
         toast({ title: "Error", description: "Failed to activate subscription.", variant: "destructive" });
       });
     } else if (status === "cancelled") {
+      localStorage.removeItem("pending_subscription_id");
       toast({ title: "Cancelled", description: "Subscription was not completed." });
     }
   }, [searchParams]);
@@ -61,8 +63,9 @@ export default function PricingPage() {
 
     setSubscribing(true);
     try {
-      const { approvalUrl } = await createSubscription();
+      const { approvalUrl, subscriptionId } = await createSubscription();
       if (approvalUrl) {
+        localStorage.setItem("pending_subscription_id", subscriptionId);
         window.location.href = approvalUrl;
       }
     } catch (err: any) {

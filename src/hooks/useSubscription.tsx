@@ -42,7 +42,7 @@ export function useSubscription() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          returnUrl: `${window.location.origin}/pricing?subscription_id={subscriptionId}&status=success`,
+          returnUrl: `${window.location.origin}/pricing?status=success`,
           cancelUrl: `${window.location.origin}/pricing?status=cancelled`,
         }),
       }
