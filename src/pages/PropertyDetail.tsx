@@ -4,6 +4,7 @@ import {
   ChevronLeft, ChevronRight, Home, Car, Layers, Thermometer, Wind, TreePine, DollarSign,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSaveProperty } from "@/hooks/useSaveProperty";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -37,7 +38,6 @@ interface ExtendedProperty extends Property {
 export default function PropertyDetail() {
   const { id } = useParams();
   const { toast } = useToast();
-  const [liked, setLiked] = useState(false);
   const [property, setProperty] = useState<ExtendedProperty | null | undefined>(undefined);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -112,6 +112,7 @@ export default function PropertyDetail() {
     );
   }
 
+  const { saved, toggle, isLoggedIn } = useSaveProperty(property.id);
   const propertyReviews = reviews.filter((r) => r.propertyId === property.id);
   const hasMultipleImages = property.images.length > 1;
   const hasCoords = property.latitude != null && property.longitude != null;
@@ -189,8 +190,11 @@ export default function PropertyDetail() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" onClick={() => { setLiked(!liked); toast({ title: liked ? "Removed from favorites" : "Added to Favorites" }); }}>
-                    <Heart className={`h-4 w-4 ${liked ? "fill-destructive text-destructive" : ""}`} />
+                  <Button variant="outline" size="icon" onClick={() => {
+                    if (!isLoggedIn) { window.location.href = "/auth"; return; }
+                    toggle().then((nowSaved) => { toast({ title: nowSaved ? "Saved to profile" : "Removed from saved" }); });
+                  }}>
+                    <Heart className={`h-4 w-4 ${saved ? "fill-destructive text-destructive" : ""}`} />
                   </Button>
                   <Button variant="outline" size="icon" onClick={() => toast({ title: "Link Copied!" })}>
                     <Share2 className="h-4 w-4" />

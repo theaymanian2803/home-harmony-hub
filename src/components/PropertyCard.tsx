@@ -1,12 +1,15 @@
 import { Heart, Bed, Bath, Maximize } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useSaveProperty } from "@/hooks/useSaveProperty";
 import type { Property } from "@/data/mockData";
 import { formatPrice } from "@/data/mockData";
 
 export default function PropertyCard({ property }: { property: Property }) {
-  const [liked, setLiked] = useState(false);
+  const { saved, toggle, isLoggedIn } = useSaveProperty(property.id);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   return (
     <Link
@@ -22,12 +25,15 @@ export default function PropertyCard({ property }: { property: Property }) {
         <button
           onClick={(e) => {
             e.preventDefault();
-            setLiked(!liked);
+            if (!isLoggedIn) { navigate("/auth"); return; }
+            toggle().then((nowSaved) => {
+              toast({ title: nowSaved ? "Saved to profile" : "Removed from saved" });
+            });
           }}
           className="absolute right-3 top-3 neu-card-sm rounded-full p-2.5 transition-all hover:scale-110"
         >
           <Heart
-            className={`h-4 w-4 transition-colors ${liked ? "fill-destructive text-destructive" : "text-muted-foreground"}`}
+            className={`h-4 w-4 transition-colors ${saved ? "fill-destructive text-destructive" : "text-muted-foreground"}`}
           />
         </button>
         {property.featured && (
