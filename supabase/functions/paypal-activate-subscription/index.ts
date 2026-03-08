@@ -62,6 +62,10 @@ Deno.serve(async (req) => {
     const subscription = await subRes.json();
 
     if (subscription.status === "ACTIVE") {
+      // Extract plan from custom_id (format: "user_id|plan")
+      const customParts = (subscription.custom_id || "").split("|");
+      const plan = customParts.length > 1 ? customParts[1] : "pro";
+
       const now = new Date();
       const periodEnd = new Date(now);
       periodEnd.setMonth(periodEnd.getMonth() + 1);
@@ -70,13 +74,13 @@ Deno.serve(async (req) => {
         user_id: user.id,
         paypal_subscription_id: subscriptionId,
         status: "active",
-        plan: "pro",
+        plan: plan,
         current_period_start: now.toISOString(),
         current_period_end: periodEnd.toISOString(),
         updated_at: now.toISOString(),
       }, { onConflict: "user_id" });
 
-      return new Response(JSON.stringify({ status: "active" }), {
+      return new Response(JSON.stringify({ status: "active", plan }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

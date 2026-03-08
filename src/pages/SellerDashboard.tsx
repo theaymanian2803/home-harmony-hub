@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, getListingLimit } from "@/hooks/useSubscription";
 import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -19,7 +19,6 @@ import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 import SubscriptionManagement from "@/components/SubscriptionManagement";
 
 type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
-const FREE_LISTING_LIMIT = 2;
 
 interface PropertyRow {
   id: string;
@@ -71,7 +70,9 @@ export default function SellerDashboard() {
     if (user) refreshListings();
   }, [user]);
 
-  const atLimit = !isAdmin && !isSubscribed && myListings.length >= FREE_LISTING_LIMIT;
+  const currentPlan = details?.plan || "free";
+  const listingLimit = getListingLimit(currentPlan);
+  const atLimit = !isAdmin && myListings.length >= listingLimit;
 
   const visibleTabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
@@ -82,7 +83,7 @@ export default function SellerDashboard() {
 
   const handleCreate = async (formData: PropertyFormData) => {
     if (atLimit) {
-      toast({ title: "Listing limit reached", description: "Upgrade to Seller Pro to add unlimited listings.", variant: "destructive" });
+      toast({ title: "Listing limit reached", description: `You've reached your ${listingLimit === 2 ? "free plan" : currentPlan} limit. Upgrade to add more listings.`, variant: "destructive" });
       return;
     }
     if (!user) return;
@@ -197,13 +198,15 @@ export default function SellerDashboard() {
         </div>
 
         {/* Free tier banner */}
-        {!isAdmin && !isSubscribed && (
+        {!isAdmin && listingLimit !== Infinity && (
           <div className="mt-6 flex flex-col gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-accent/10 p-2"><Lock className="h-5 w-5 text-accent" /></div>
               <div>
-                <p className="text-sm font-semibold text-foreground">Free Plan — {myListings.length}/{FREE_LISTING_LIMIT} listings used</p>
-                <p className="text-xs text-muted-foreground">Upgrade to Seller Pro for unlimited listings, analytics & more.</p>
+                <p className="text-sm font-semibold text-foreground">{currentPlan === "free" ? "Free" : "Seller Pro"} Plan — {myListings.length}/{listingLimit} listings used</p>
+                <p className="text-xs text-muted-foreground">
+                  {currentPlan === "free" ? "Upgrade for more listings, analytics & more." : "Upgrade to Unlimited for unlimited listings."}
+                </p>
               </div>
             </div>
             <Button size="sm" className="gradient-caramel text-accent-foreground hover:opacity-90" asChild>
