@@ -4,6 +4,7 @@ import {
   ChevronLeft, ChevronRight, Home, Car, Layers, Thermometer, Wind, TreePine, DollarSign,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSaveProperty } from "@/hooks/useSaveProperty";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
