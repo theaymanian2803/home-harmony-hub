@@ -68,7 +68,7 @@ export default function SavedSearches({ currentFilters, onApply }: Props) {
       toast({ title: "Error saving search", description: error.message, variant: "destructive" });
     } else if (data) {
       setSearches((prev) => [
-        { id: data.id, name: data.name, filters: data.filters as SearchFilters, created_at: data.created_at },
+        { id: data.id, name: data.name, filters: data.filters as unknown as SearchFilters, created_at: data.created_at },
         ...prev,
       ]);
       setName("");
