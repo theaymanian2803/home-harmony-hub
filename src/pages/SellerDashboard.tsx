@@ -76,6 +76,7 @@ export default function SellerDashboard() {
     const { error } = await supabase.from("properties").insert({
       user_id: user.id,
       ...formData,
+      status: isAdmin ? "active" : "pending",
     });
 
     if (error) {
