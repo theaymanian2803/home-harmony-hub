@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import ImageUpload from "@/components/ImageUpload";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 export interface PropertyFormData {
   title: string;
@@ -48,7 +49,22 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
   const [geocoding, setGeocoding] = useState(false);
   const latRef = useRef<HTMLInputElement>(null);
   const lngRef = useRef<HTMLInputElement>(null);
+  const cityRef = useRef<HTMLInputElement>(null);
+  const stateRef = useRef<HTMLInputElement>(null);
+  const zipRef = useRef<HTMLInputElement>(null);
+  const neighborhoodRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  const handleAddressSelect = (s: any) => {
+    const addr = s.address || {};
+    if (cityRef.current) cityRef.current.value = addr.city || addr.town || addr.village || "";
+    if (stateRef.current) stateRef.current.value = addr.state || "";
+    if (zipRef.current) zipRef.current.value = addr.postcode || "";
+    if (neighborhoodRef.current) neighborhoodRef.current.value = addr.neighbourhood || addr.suburb || "";
+    if (latRef.current) latRef.current.value = parseFloat(s.lat).toFixed(6);
+    if (lngRef.current) lngRef.current.value = parseFloat(s.lon).toFixed(6);
+    toast.success("Address selected — fields auto-filled!");
+  };
 
   const handleGeocode = async () => {
     if (!formRef.current) return;
@@ -226,24 +242,29 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
       <SectionTitle>Location</SectionTitle>
       <div>
         <label className="mb-1 block text-sm font-medium text-foreground">Street Address</label>
-        <Input name="location" placeholder="1234 Main St" defaultValue={initialData?.location} />
+        <AddressAutocomplete
+          name="location"
+          placeholder="Start typing an address…"
+          defaultValue={initialData?.location}
+          onSelect={handleAddressSelect}
+        />
       </div>
       <div className="grid gap-4 sm:grid-cols-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">City *</label>
-          <Input name="city" placeholder="Los Angeles" defaultValue={initialData?.city} required />
+          <Input ref={cityRef} name="city" placeholder="Los Angeles" defaultValue={initialData?.city} required />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">State *</label>
-          <Input name="state" placeholder="CA" defaultValue={initialData?.state} required />
+          <Input ref={stateRef} name="state" placeholder="CA" defaultValue={initialData?.state} required />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Zip Code</label>
-          <Input name="zip_code" placeholder="90210" defaultValue={initialData?.zip_code} />
+          <Input ref={zipRef} name="zip_code" placeholder="90210" defaultValue={initialData?.zip_code} />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Neighborhood</label>
-          <Input name="neighborhood" placeholder="e.g. Downtown" defaultValue={initialData?.neighborhood} />
+          <Input ref={neighborhoodRef} name="neighborhood" placeholder="e.g. Downtown" defaultValue={initialData?.neighborhood} />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
