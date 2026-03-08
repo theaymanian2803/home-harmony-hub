@@ -37,7 +37,7 @@ interface PlanConfig {
   price: string;
   intervalUnit: string;
   intervalCount: number;
-  basePlan: string; // the plan name to store in DB (pro or unlimited)
+  basePlan: string;
 }
 
 const PLAN_CONFIGS: Record<string, PlanConfig> = {
@@ -87,7 +87,6 @@ async function ensurePlan(token: string, plan: string): Promise<string> {
   const config = PLAN_CONFIGS[plan];
   if (!config) throw new Error(`Unknown plan: ${plan}`);
 
-  // Try to find existing plan by listing
   const listRes = await fetch(
     `${PAYPAL_BASE}/v1/billing/plans?product_id=${config.productId}&page_size=20&total_required=true`,
     { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
@@ -95,12 +94,10 @@ async function ensurePlan(token: string, plan: string): Promise<string> {
 
   if (listRes.ok) {
     const listData = await listRes.json();
-    // Find plan matching the name
     const existing = listData.plans?.find((p: any) => p.name === config.planName);
     if (existing) return existing.id;
   }
 
-  // Create product (may already exist)
   const productRes = await fetch(`${PAYPAL_BASE}/v1/catalogs/products`, {
     method: "POST",
     headers: {
@@ -122,7 +119,6 @@ async function ensurePlan(token: string, plan: string): Promise<string> {
     console.error("Product creation error:", err);
   }
 
-  // Create plan
   const planRes = await fetch(`${PAYPAL_BASE}/v1/billing/plans`, {
     method: "POST",
     headers: {
@@ -167,18 +163,28 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const token = authHeader?.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-    if (userError || !user) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = claimsData.claims.sub as string;
 
     const { returnUrl, cancelUrl, plan = "pro" } = await req.json();
     const config = PLAN_CONFIGS[plan];
@@ -192,7 +198,7 @@ Deno.serve(async (req) => {
     const ppToken = await getPayPalAccessToken();
     const planId = await ensurePlan(ppToken, plan);
 
-    // Create subscription
+    // Store the full plan key (e.g. "pro_annual") in custom_id so activate knows the billing cycle
     const subRes = await fetch(`${PAYPAL_BASE}/v1/billing/subscriptions`, {
       method: "POST",
       headers: {
@@ -201,7 +207,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         plan_id: planId,
-        custom_id: `${user.id}|${config.basePlan}`,
+        custom_id: `${userId}|${plan}`,
         application_context: {
           brand_name: "EstateHub",
           return_url: returnUrl,
@@ -219,9 +225,10 @@ Deno.serve(async (req) => {
     const subscription = await subRes.json();
     const approvalLink = subscription.links.find((l: any) => l.rel === "approve")?.href;
 
-    // Store pending subscription
-    await supabase.from("subscriptions").upsert({
-      user_id: user.id,
+    // Store pending subscription using service role
+    const adminSupabase = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    await adminSupabase.from("subscriptions").upsert({
+      user_id: userId,
       paypal_subscription_id: subscription.id,
       status: "pending",
       plan: config.basePlan,
