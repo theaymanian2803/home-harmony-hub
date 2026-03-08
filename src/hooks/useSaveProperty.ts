@@ -22,7 +22,7 @@ export function useSaveProperty(propertyId: string) {
   }, [user, propertyId]);
 
   const toggle = useCallback(async () => {
-    if (!user || loading) return false;
+    if (!user || loading || !isValidUuid) return false;
     setLoading(true);
     try {
       if (saved) {
