@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
-import { SlidersHorizontal, X, Map } from "lucide-react";
+import { SlidersHorizontal, X, Map, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import SearchMapView from "@/components/SearchMapView";
 import { properties as mockProperties, type Property } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 
