@@ -95,6 +95,7 @@ export default function SellerDashboard() {
       // Refresh listings
       const { data } = await supabase.from("properties").select("id, title, price, views, status").eq("user_id", user.id);
       setMyListings((data as PropertyRow[]) || []);
+      setUploadedImages([]);
       setTab("manage");
     }
   };
