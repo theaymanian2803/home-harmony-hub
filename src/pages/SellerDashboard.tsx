@@ -38,7 +38,7 @@ export default function SellerDashboard() {
   const [myListings, setMyListings] = useState<PropertyRow[]>([]);
   const [loadingListings, setLoadingListings] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState<PropertyFormData | null>(null);
+  const [editData, setEditData] = useState<Partial<PropertyFormData> | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
