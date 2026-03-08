@@ -250,14 +250,24 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Latitude</label>
-          <Input name="latitude" type="number" step="any" placeholder="34.0522" defaultValue={initialData?.latitude ?? ""} />
+          <Input ref={latRef} name="latitude" type="number" step="any" placeholder="34.0522" defaultValue={initialData?.latitude ?? ""} />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Longitude</label>
-          <Input name="longitude" type="number" step="any" placeholder="-118.2437" defaultValue={initialData?.longitude ?? ""} />
+          <Input ref={lngRef} name="longitude" type="number" step="any" placeholder="-118.2437" defaultValue={initialData?.longitude ?? ""} />
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">Tip: Find coordinates on Google Maps by right-clicking a location.</p>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleGeocode}
+        disabled={geocoding}
+        className="mt-1"
+      >
+        {geocoding ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <MapPin className="mr-1 h-4 w-4" />}
+        {geocoding ? "Finding coordinates…" : "Auto-fill coordinates from address"}
+      </Button>
 
       {/* Amenities */}
       <SectionTitle>Amenities & Features</SectionTitle>
