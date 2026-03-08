@@ -64,6 +64,13 @@ export default function PropertyDetail() {
     if (id) fetchProperty();
   }, [id]);
 
+  // Track view count
+  useEffect(() => {
+    if (id) {
+      supabase.rpc("increment_property_views", { _property_id: id });
+    }
+  }, [id]);
+
   if (property === undefined) return null;
 
   if (!property) {
