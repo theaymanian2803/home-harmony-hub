@@ -231,19 +231,39 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Heating</label>
-          <Input name="heating" placeholder="e.g. Central, Forced Air" defaultValue={initialData?.heating} />
+          <select name="heating" defaultValue={initialData?.heating || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select heating</option>
+            {getByCategory("heating").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Cooling</label>
-          <Input name="cooling" placeholder="e.g. Central AC, Mini-Split" defaultValue={initialData?.cooling} />
+          <select name="cooling" defaultValue={initialData?.cooling || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select cooling</option>
+            {getByCategory("cooling").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Flooring</label>
-          <Input name="flooring" placeholder="e.g. Hardwood, Tile, Carpet" defaultValue={initialData?.flooring} />
+          <select name="flooring" defaultValue={initialData?.flooring || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select flooring</option>
+            {getByCategory("flooring").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground">Roof</label>
-          <Input name="roof" placeholder="e.g. Shingle, Metal, Tile" defaultValue={initialData?.roof} />
+          <select name="roof" defaultValue={initialData?.roof || ""} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select roof type</option>
+            {getByCategory("roof").map((o) => (
+              <option key={o.id} value={o.value}>{o.value}</option>
+            ))}
+          </select>
         </div>
       </div>
 
