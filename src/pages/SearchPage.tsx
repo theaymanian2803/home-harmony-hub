@@ -17,7 +17,7 @@ export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "map" | "split">("grid");
-  const [priceRange, setPriceRange] = useState([0, 4000000]);
+  const [priceSort, setPriceSort] = useState<"none" | "asc" | "desc">("none");
   const [beds, setBeds] = useState(0);
   const [baths, setBaths] = useState(0);
   const [selectedType, setSelectedType] = useState(() => {
