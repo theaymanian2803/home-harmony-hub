@@ -51,6 +51,8 @@ export default function SellerDashboard() {
     const { data } = await supabase.from("properties").select("id, title, price, views, status").eq("user_id", user.id);
     setMyListings((data as PropertyRow[]) || []);
     setLoadingListings(false);
+    const { data: saves } = await supabase.rpc("get_property_saves_count", { _user_id: user.id });
+    setSavesData((saves as SavesCount[]) || []);
   };
 
   useEffect(() => { if (user) refreshListings(); }, [user]);
