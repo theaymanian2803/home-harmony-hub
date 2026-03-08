@@ -320,9 +320,23 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
 
       {/* Amenities */}
       <SectionTitle>Amenities & Features</SectionTitle>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-foreground">Amenities</label>
-        <Input name="amenities" placeholder="Pool, Garden, Garage, Smart Home (comma separated)" defaultValue={initialData?.amenities?.join(", ")} />
+      <div className="flex flex-wrap gap-3">
+        {getByCategory("amenity").map((o) => (
+          <label key={o.id} className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+            <Checkbox
+              checked={selectedAmenities.includes(o.value)}
+              onCheckedChange={(checked) => {
+                setSelectedAmenities((prev) =>
+                  checked ? [...prev, o.value] : prev.filter((a) => a !== o.value)
+                );
+              }}
+            />
+            {o.value}
+          </label>
+        ))}
+        {getByCategory("amenity").length === 0 && (
+          <p className="text-sm text-muted-foreground italic">No amenities configured yet</p>
+        )}
       </div>
 
       {/* Images */}
