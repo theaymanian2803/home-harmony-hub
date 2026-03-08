@@ -93,18 +93,25 @@ export default function SearchPage() {
   const FilterPanel = () => (
     <div className="space-y-6">
       <div>
-        <label className="mb-2 block text-sm font-semibold text-foreground">Price Range</label>
-        <Slider
-          min={0}
-          max={4000000}
-          step={50000}
-          value={priceRange}
-          onValueChange={setPriceRange}
-          className="mt-2"
-        />
-        <div className="mt-1 flex justify-between text-xs text-muted-foreground">
-          <span>${(priceRange[0] / 1000).toFixed(0)}k</span>
-          <span>${(priceRange[1] / 1000000).toFixed(1)}M</span>
+        <label className="mb-2 block text-sm font-semibold text-foreground">Sort by Price</label>
+        <div className="flex gap-2">
+          {([
+            { value: "none" as const, label: "Default" },
+            { value: "asc" as const, label: "Low → High" },
+            { value: "desc" as const, label: "High → Low" },
+          ]).map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => setPriceSort(value)}
+              className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
+                priceSort === value
+                  ? "border-accent bg-accent text-accent-foreground"
+                  : "border-border text-muted-foreground hover:border-accent"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
