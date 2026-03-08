@@ -45,7 +45,7 @@ export default function CtaSection() {
             <Button
               size="lg"
               variant="outline"
-              className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 rounded-xl px-10"
+              className="border-accent/40 bg-transparent text-accent hover:bg-accent hover:text-accent-foreground rounded-xl px-10"
               asChild
             >
               <Link to="/auth">Create Free Account</Link>
