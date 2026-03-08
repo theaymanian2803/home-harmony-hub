@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { SlidersHorizontal, X, Map, LayoutGrid } from "lucide-react";
+import { SlidersHorizontal, X, Map, LayoutGrid, Columns2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,7 +16,7 @@ const allAmenities = ["Pool", "Garden", "Garage", "Fireplace", "Smart Home", "Te
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [mapView, setMapView] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "map" | "split">("grid");
   const [priceRange, setPriceRange] = useState([0, 4000000]);
   const [beds, setBeds] = useState(0);
   const [baths, setBaths] = useState(0);
@@ -194,23 +194,26 @@ export default function SearchPage() {
               variant="outline"
               size="sm"
               className="md:hidden"
-              onClick={() => setFiltersOpen(!filtersOpen)}
+              onClick={() => setFiltersOpen((o) => !o)}
             >
               <SlidersHorizontal className="mr-1 h-4 w-4" />
               Filters
             </Button>
-            <Button
-              variant={mapView ? "default" : "outline"}
-              size="sm"
-              onClick={() => setMapView(!mapView)}
-              className={mapView ? "gradient-caramel text-accent-foreground" : ""}
-            >
-              {mapView ? (
-                <><LayoutGrid className="mr-1 h-4 w-4" /> Grid View</>
-              ) : (
-                <><Map className="mr-1 h-4 w-4" /> Map View</>
-              )}
-            </Button>
+            {([
+              { mode: "grid" as const, icon: LayoutGrid, label: "Grid" },
+              { mode: "split" as const, icon: Columns2, label: "Split" },
+              { mode: "map" as const, icon: Map, label: "Map" },
+            ]).map(({ mode, icon: Icon, label }) => (
+              <Button
+                key={mode}
+                variant={viewMode === mode ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode(mode)}
+                className={viewMode === mode ? "gradient-caramel text-accent-foreground" : ""}
+              >
+                <Icon className="mr-1 h-4 w-4" /> {label}
+              </Button>
+            ))}
           </div>
         </div>
 
@@ -239,9 +242,28 @@ export default function SearchPage() {
             </div>
           )}
 
-          <div className="flex-1">
-            {mapView ? (
+          <div className="flex-1 min-w-0">
+            {viewMode === "map" ? (
               <SearchMapView properties={filtered} />
+            ) : viewMode === "split" ? (
+              <div className="flex gap-4 h-[calc(100vh-14rem)] min-h-[500px]">
+                <div className="w-1/2 overflow-y-auto pr-2">
+                  {filtered.length === 0 ? (
+                    <div className="py-20 text-center text-muted-foreground">
+                      No properties match your filters.
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+                      {filtered.map((p) => (
+                        <PropertyCard key={p.id} property={p} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="w-1/2 min-w-0">
+                  <SearchMapView properties={filtered} />
+                </div>
+              </div>
             ) : filtered.length === 0 ? (
               <div className="py-20 text-center text-muted-foreground">
                 No properties match your filters. Try adjusting your criteria.
