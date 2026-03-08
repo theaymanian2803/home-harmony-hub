@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight,
+  LayoutDashboard, Plus, List, Eye, MessageSquare, Trash2, Edit, Lock, ArrowRight, CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,9 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/data/mockData";
 import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
+import SubscriptionManagement from "@/components/SubscriptionManagement";
 
-type Tab = "overview" | "create" | "manage" | "edit";
+type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
 const FREE_LISTING_LIMIT = 2;
 
 interface PropertyRow {
@@ -31,7 +32,7 @@ interface PropertyRow {
 export default function SellerDashboard() {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
-  const { isSubscribed } = useSubscription();
+  const { isSubscribed, details, cancelSubscription } = useSubscription();
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("overview");
@@ -64,6 +65,7 @@ export default function SellerDashboard() {
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "create", label: "New Listing", icon: Plus },
     { id: "manage", label: "Manage", icon: List },
+    { id: "subscription", label: "Subscription", icon: CreditCard },
   ];
 
   const handleCreate = async (formData: PropertyFormData) => {
@@ -298,6 +300,15 @@ export default function SellerDashboard() {
               </Table>
             )}
           </div>
+        )}
+
+        {/* Subscription */}
+        {tab === "subscription" && (
+          <SubscriptionManagement
+            isSubscribed={isSubscribed}
+            details={details}
+            onCancel={cancelSubscription}
+          />
         )}
       </div>
     </div>
