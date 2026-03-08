@@ -41,60 +41,102 @@ export type Database = {
           baths: number | null
           beds: number | null
           city: string | null
+          cooling: string | null
           created_at: string
           description: string | null
           featured: boolean | null
+          flooring: string | null
+          heating: string | null
+          hoa_fee: number | null
           id: string
           images: string[] | null
+          latitude: number | null
           location: string | null
+          longitude: number | null
+          lot_size: number | null
+          neighborhood: string | null
+          parking: number | null
           price: number
+          property_style: string | null
+          roof: string | null
           sqft: number | null
           state: string | null
           status: string | null
+          stories: number | null
           title: string
           type: string | null
           user_id: string
           views: number | null
+          year_built: number | null
+          zip_code: string | null
         }
         Insert: {
           amenities?: string[] | null
           baths?: number | null
           beds?: number | null
           city?: string | null
+          cooling?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          flooring?: string | null
+          heating?: string | null
+          hoa_fee?: number | null
           id?: string
           images?: string[] | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
+          lot_size?: number | null
+          neighborhood?: string | null
+          parking?: number | null
           price: number
+          property_style?: string | null
+          roof?: string | null
           sqft?: number | null
           state?: string | null
           status?: string | null
+          stories?: number | null
           title: string
           type?: string | null
           user_id: string
           views?: number | null
+          year_built?: number | null
+          zip_code?: string | null
         }
         Update: {
           amenities?: string[] | null
           baths?: number | null
           beds?: number | null
           city?: string | null
+          cooling?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          flooring?: string | null
+          heating?: string | null
+          hoa_fee?: number | null
           id?: string
           images?: string[] | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
+          lot_size?: number | null
+          neighborhood?: string | null
+          parking?: number | null
           price?: number
+          property_style?: string | null
+          roof?: string | null
           sqft?: number | null
           state?: string | null
           status?: string | null
+          stories?: number | null
           title?: string
           type?: string | null
           user_id?: string
           views?: number | null
+          year_built?: number | null
+          zip_code?: string | null
         }
         Relationships: []
       }

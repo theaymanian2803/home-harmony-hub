@@ -38,7 +38,7 @@ export default function SellerDashboard() {
   const [myListings, setMyListings] = useState<PropertyRow[]>([]);
   const [loadingListings, setLoadingListings] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editData, setEditData] = useState<PropertyFormData | null>(null);
+  const [editData, setEditData] = useState<Partial<PropertyFormData> | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -91,7 +91,7 @@ export default function SellerDashboard() {
   const handleEdit = async (id: string) => {
     const { data } = await supabase
       .from("properties")
-      .select("title, description, price, beds, baths, city, state, amenities, images")
+      .select("*")
       .eq("id", id)
       .single();
 
@@ -103,8 +103,24 @@ export default function SellerDashboard() {
         price: data.price,
         beds: data.beds || 0,
         baths: data.baths || 0,
+        sqft: data.sqft || 0,
         city: data.city || "",
         state: data.state || "",
+        location: data.location || "",
+        zip_code: (data as any).zip_code || "",
+        neighborhood: (data as any).neighborhood || "",
+        lot_size: (data as any).lot_size || 0,
+        year_built: (data as any).year_built,
+        parking: (data as any).parking || 0,
+        stories: (data as any).stories || 1,
+        heating: (data as any).heating || "",
+        cooling: (data as any).cooling || "",
+        flooring: (data as any).flooring || "",
+        roof: (data as any).roof || "",
+        hoa_fee: (data as any).hoa_fee || 0,
+        property_style: (data as any).property_style || "",
+        latitude: (data as any).latitude,
+        longitude: (data as any).longitude,
         amenities: data.amenities || [],
         images: data.images || [],
       });
