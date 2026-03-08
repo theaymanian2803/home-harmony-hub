@@ -35,6 +35,7 @@ export default function SellerDashboard() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<PropertyFormData> | null>(null);
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(false);
+  const [savesData, setSavesData] = useState<SavesCount[]>([]);
 
   useEffect(() => {
     if (isSubscribed && details?.status === "active") {
