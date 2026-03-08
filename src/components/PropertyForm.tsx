@@ -141,7 +141,7 @@ export default function PropertyForm({ userId, initialData, onSubmit, submitLabe
       flooring: str("flooring"),
       roof: str("roof"),
       hoa_fee: num("hoa_fee"),
-      amenities: str("amenities").split(",").map((s) => s.trim()).filter(Boolean),
+      amenities: selectedAmenities,
       images,
     });
     setSubmitting(false);
