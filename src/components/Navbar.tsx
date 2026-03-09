@@ -173,7 +173,7 @@ export default function Navbar() {
             </Button>
           )}
           <Button size="sm" className="gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl shadow-md" asChild>
-            <Link to={user ? "/dashboard" : "/auth"}>{t("nav.listProperty")}</Link>
+            <Link to={user ? "/dashboard" : "/auth"}>{ctaText}</Link>
           </Button>
         </div>
 
