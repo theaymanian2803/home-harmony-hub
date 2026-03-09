@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { forwardRef, useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface PropertyRow {
@@ -20,14 +20,14 @@ interface Props {
 }
 
 const COLORS = [
-  "hsl(25, 65%, 45%)",   // accent/chocolate
-  "hsl(35, 80%, 55%)",   // caramel
-  "hsl(25, 40%, 20%)",   // cocoa
-  "hsl(30, 25%, 78%)",   // latte
-  "hsl(25, 55%, 58%)",   // chocolate-light
+  "hsl(25, 65%, 45%)",
+  "hsl(35, 80%, 55%)",
+  "hsl(25, 40%, 20%)",
+  "hsl(30, 25%, 78%)",
+  "hsl(25, 55%, 58%)",
 ];
 
-export default function DashboardAnalytics({ listings, savesData = [] }: Props) {
+const DashboardAnalytics = forwardRef<HTMLDivElement, Props>(({ listings, savesData = [] }, ref) => {
   const savesMap = useMemo(() => {
     const map: Record<string, number> = {};
     savesData.forEach((s) => { map[s.property_id] = s.saves_count; });
@@ -55,7 +55,6 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   }, [listings]);
 
-
   const totalViews = listings.reduce((s, l) => s + (l.views || 0), 0);
   const totalSaves = savesData.reduce((s, d) => s + d.saves_count, 0);
   const avgPrice = listings.length
@@ -64,15 +63,14 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
 
   if (listings.length === 0) {
     return (
-      <div className="mt-6 text-center py-12 text-muted-foreground">
+      <div ref={ref} className="mt-6 text-center py-12 text-muted-foreground">
         <p>No listing data to display analytics. Create some listings first!</p>
       </div>
     );
   }
 
   return (
-    <div className="mt-6 space-y-6">
-      {/* Summary cards */}
+    <div ref={ref} className="mt-6 space-y-6">
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         {[
           { label: "Total Listings", value: listings.length },
@@ -89,7 +87,6 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Views & Saves by Property */}
         <div className="rounded-xl border border-border bg-card p-5">
           <h4 className="font-display text-xl font-bold text-foreground mb-4">Views & Saves by Property</h4>
           <ResponsiveContainer width="100%" height={220}>
@@ -110,7 +107,6 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
           </ResponsiveContainer>
         </div>
 
-        {/* Status Distribution */}
         <div className="rounded-xl border border-border bg-card p-5">
           <h4 className="font-display text-xl font-bold text-foreground mb-4">Listing Status</h4>
           <div className="flex items-center justify-center">
@@ -138,4 +134,7 @@ export default function DashboardAnalytics({ listings, savesData = [] }: Props) 
       </div>
     </div>
   );
-}
+});
+
+DashboardAnalytics.displayName = "DashboardAnalytics";
+export default DashboardAnalytics;
