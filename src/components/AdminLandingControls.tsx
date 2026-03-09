@@ -179,10 +179,10 @@ export default function AdminLandingControls() {
             <h2 className="font-display text-xl font-bold text-foreground">Landing Page Controls</h2>
             <p className="text-sm text-muted-foreground">Edit all text content and testimonials displayed on the homepage.</p>
           </div>
-          {subTab !== "testimonials" && Object.keys(editedValues).length > 0 && (
-            <Button onClick={handleSaveAll} disabled={saving} className="gradient-caramel text-accent-foreground hover:opacity-90">
+          {subTab !== "testimonials" && (
+            <Button onClick={handleSaveAll} disabled={saving || Object.keys(editedValues).length === 0} className="gradient-caramel text-accent-foreground hover:opacity-90">
               <Save className="mr-2 h-4 w-4" />
-              {saving ? "Saving…" : `Save Changes (${Object.keys(editedValues).length})`}
+              {saving ? "Saving…" : `Save Changes${Object.keys(editedValues).length > 0 ? ` (${Object.keys(editedValues).length})` : ""}`}
             </Button>
           )}
         </div>
