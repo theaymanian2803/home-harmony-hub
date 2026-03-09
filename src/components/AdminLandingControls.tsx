@@ -180,10 +180,16 @@ export default function AdminLandingControls() {
             <p className="text-sm text-muted-foreground">Edit all text content and testimonials displayed on the homepage.</p>
           </div>
           {subTab !== "testimonials" && (
-            <Button onClick={handleSaveAll} disabled={saving || Object.keys(editedValues).length === 0} className="gradient-caramel text-accent-foreground hover:opacity-90">
-              <Save className="mr-2 h-4 w-4" />
-              {saving ? "Saving…" : `Save Changes${Object.keys(editedValues).length > 0 ? ` (${Object.keys(editedValues).length})` : ""}`}
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setEditedValues({})} disabled={saving || Object.keys(editedValues).length === 0}>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Discard
+              </Button>
+              <Button onClick={handleSaveAll} disabled={saving || Object.keys(editedValues).length === 0} className="gradient-caramel text-accent-foreground hover:opacity-90">
+                <Save className="mr-2 h-4 w-4" />
+                {saving ? "Saving…" : `Save Changes${Object.keys(editedValues).length > 0 ? ` (${Object.keys(editedValues).length})` : ""}`}
+              </Button>
+            </div>
           )}
         </div>
 
