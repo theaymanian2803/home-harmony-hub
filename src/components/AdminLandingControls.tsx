@@ -111,6 +111,47 @@ export default function AdminLandingControls() {
     await saveHeroBgImage("");
   };
 
+  const saveLogoImage = async (url: string) => {
+    const { error } = await supabase
+      .from("site_content")
+      .update({ value: url, updated_at: new Date().toISOString() } as any)
+      .eq("key", "navbar_logo_image");
+    if (error) toast({ title: "Error saving logo", variant: "destructive" });
+    else { toast({ title: "Logo updated" }); await refetch(); }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+    setUploadingImage(true);
+    const ext = file.name.split(".").pop();
+    const path = `logo-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } else {
+      const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
+      await saveLogoImage(urlData.publicUrl);
+    }
+    setUploadingImage(false);
+    if (logoInputRef.current) logoInputRef.current.value = "";
+  };
+
+  const handleSetLogoUrl = async () => {
+    const url = logoUrlInput.trim();
+    if (!url) return;
+    await saveLogoImage(url);
+    setLogoUrlInput("");
+  };
+
+  const handleRemoveLogo = async () => {
+    await saveLogoImage("");
+  };
+
   const handleAddTestimonial = async () => {
     if (!newTestimonial.name || !newTestimonial.quote) {
       toast({ title: "Name and quote are required", variant: "destructive" });
