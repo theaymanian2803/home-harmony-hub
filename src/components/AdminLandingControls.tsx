@@ -27,6 +27,7 @@ export default function AdminLandingControls() {
   const [newTestimonial, setNewTestimonial] = useState({ name: "", role: "", quote: "", rating: 5, avatar: "" });
 
   const subTabs: { id: SubTab; label: string; icon: React.ElementType }[] = [
+    { id: "navbar", label: "Navbar", icon: Navigation },
     { id: "hero", label: "Hero Section", icon: Type },
     { id: "stats", label: "Stats Bar", icon: BarChart3 },
     { id: "sections", label: "Section Text", icon: Megaphone },
