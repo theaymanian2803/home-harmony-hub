@@ -19,7 +19,9 @@ export default function AdminLandingControls() {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState("");
+  const [logoUrlInput, setLogoUrlInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Testimonial form
   const [newTestimonial, setNewTestimonial] = useState({ name: "", role: "", quote: "", rating: 5, avatar: "" });
