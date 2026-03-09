@@ -69,6 +69,7 @@ export default function SellerDashboard() {
     { id: "overview", label: t("dashboard.overview"), icon: LayoutDashboard },
     { id: "create", label: t("dashboard.newListing"), icon: Plus },
     { id: "manage", label: t("dashboard.manage"), icon: List },
+    { id: "profile", label: "My Profile", icon: Edit },
     { id: "subscription", label: t("dashboard.subscription"), icon: CreditCard },
   ];
 
