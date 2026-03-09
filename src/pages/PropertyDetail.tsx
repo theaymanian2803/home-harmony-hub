@@ -253,11 +253,36 @@ export default function PropertyDetail() {
             <div className="sticky top-24 space-y-6">
               <div className="rounded-lg border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10"><User className="h-5 w-5 text-accent" /></div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 overflow-hidden">
+                    {seller?.avatar_url ? (
+                      <img src={seller.avatar_url} alt={seller.full_name || "Seller"} className="h-full w-full object-cover" />
+                    ) : (
+                      <User className="h-5 w-5 text-accent" />
+                    )}
+                  </div>
                   <div>
-                    <p className="font-semibold text-foreground">{property.sellerName}</p>
+                    <p className="font-semibold text-foreground">{seller?.full_name || property.sellerName}</p>
+                    {seller?.company_name && <p className="text-xs text-accent font-medium">{seller.company_name}</p>}
                     <p className="text-xs text-muted-foreground">{t("property.verifiedSeller")}</p>
                   </div>
+                </div>
+                {seller?.bio && <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{seller.bio}</p>}
+                <div className="mt-3 space-y-1.5">
+                  {seller?.show_phone && seller?.phone && (
+                    <a href={`tel:${seller.phone}`} className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors">
+                      📞 {seller.phone}
+                    </a>
+                  )}
+                  {seller?.show_email && seller?.email && (
+                    <a href={`mailto:${seller.email}`} className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors">
+                      ✉️ {seller.email}
+                    </a>
+                  )}
+                  {seller?.website && (
+                    <a href={seller.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors">
+                      🌐 Website
+                    </a>
+                  )}
                 </div>
               </div>
 
