@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone, Upload, Link as LinkIcon, ImageIcon, X, RotateCcw } from "lucide-react";
+import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone, Upload, Link as LinkIcon, ImageIcon, X, RotateCcw, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
