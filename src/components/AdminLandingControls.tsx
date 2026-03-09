@@ -271,6 +271,99 @@ export default function AdminLandingControls() {
           ))}
         </div>
 
+        {/* Navbar */}
+        {subTab === "navbar" && (
+          <div className="max-w-2xl space-y-8">
+            {/* Logo */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Site Logo</h3>
+              <div className="rounded-lg border border-border bg-secondary/30 p-4">
+                {getValue("navbar_logo_image") ? (
+                  <div className="mb-4">
+                    <div className="relative inline-block rounded-lg overflow-hidden border border-border bg-background p-3">
+                      <img
+                        src={getValue("navbar_logo_image")}
+                        alt="Logo preview"
+                        className="h-12 object-contain"
+                      />
+                      <button
+                        onClick={handleRemoveLogo}
+                        className="absolute top-1 right-1 rounded-full bg-destructive p-1 text-destructive-foreground hover:opacity-90 transition-opacity"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground truncate">{getValue("navbar_logo_image")}</p>
+                  </div>
+                ) : (
+                  <div className="mb-4 flex h-20 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30">
+                    <div className="text-center">
+                      <ImageIcon className="mx-auto h-6 w-6 text-muted-foreground/50" />
+                      <p className="mt-1 text-xs text-muted-foreground">No logo set (using default icon)</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">Upload Logo</p>
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => logoInputRef.current?.click()}
+                      disabled={uploadingImage}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {uploadingImage ? "Uploading…" : "Choose File"}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs text-muted-foreground">OR</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">External Image URL</p>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://example.com/logo.png"
+                        value={logoUrlInput}
+                        onChange={(e) => setLogoUrlInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleSetLogoUrl(); }}
+                        className="text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSetLogoUrl}
+                        disabled={!logoUrlInput.trim()}
+                        className="shrink-0"
+                      >
+                        <LinkIcon className="mr-1 h-4 w-4" /> Set URL
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navbar text fields */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Navbar Content</h3>
+              {renderContentFields("navbar")}
+            </div>
+          </div>
+        )}
+
         {/* Hero */}
         {subTab === "hero" && (
           <div className="max-w-2xl space-y-8">
