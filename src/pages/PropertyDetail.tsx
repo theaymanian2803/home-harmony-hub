@@ -27,6 +27,18 @@ interface ExtendedProperty extends Property {
   hoa_fee?: number; property_style?: string;
 }
 
+interface SellerInfo {
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  company_name: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  website: string | null;
+  show_phone: boolean;
+  show_email: boolean;
+}
+
 export default function PropertyDetail() {
   const { id } = useParams();
   const { toast } = useToast();
@@ -34,6 +46,7 @@ export default function PropertyDetail() {
   const [property, setProperty] = useState<ExtendedProperty | null | undefined>(undefined);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [seller, setSeller] = useState<SellerInfo | null>(null);
   const { saved, toggle, isLoggedIn } = useSaveProperty(property?.id ?? "");
 
   useEffect(() => {
