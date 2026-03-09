@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 function MegaMenuTrigger({ label, isActive, children }: { label: string; isActive?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -67,6 +68,11 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const { t } = useTranslation();
+  const { getValue } = useSiteContent();
+
+  const siteName = getValue("navbar_site_name", "EstateHub");
+  const logoImage = getValue("navbar_logo_image");
+  const ctaText = getValue("navbar_cta_text", t("nav.listProperty"));
 
   const handleSignOut = async () => {
     await signOut();
@@ -80,10 +86,14 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="gradient-caramel rounded-xl p-2">
-            <Building2 className="h-5 w-5 text-accent-foreground" />
-          </div>
-          <span className="font-display text-xl font-bold text-foreground">EstateHub</span>
+          {logoImage ? (
+            <img src={logoImage} alt={siteName} className="h-9 w-auto object-contain" />
+          ) : (
+            <div className="gradient-caramel rounded-xl p-2">
+              <Building2 className="h-5 w-5 text-accent-foreground" />
+            </div>
+          )}
+          <span className="font-display text-xl font-bold text-foreground">{siteName}</span>
         </Link>
 
         {/* Desktop nav */}
@@ -163,7 +173,7 @@ export default function Navbar() {
             </Button>
           )}
           <Button size="sm" className="gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl shadow-md" asChild>
-            <Link to={user ? "/dashboard" : "/auth"}>{t("nav.listProperty")}</Link>
+            <Link to={user ? "/dashboard" : "/auth"}>{ctaText}</Link>
           </Button>
         </div>
 
@@ -241,7 +251,7 @@ export default function Navbar() {
               </Link>
             )}
             <Button size="sm" className="mt-2 gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl" asChild>
-              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setMobileOpen(false)}>{t("nav.listProperty")}</Link>
+              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setMobileOpen(false)}>{ctaText}</Link>
             </Button>
           </nav>
         </div>

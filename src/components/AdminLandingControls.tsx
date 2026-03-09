@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone, Upload, Link as LinkIcon, ImageIcon, X, RotateCcw } from "lucide-react";
+import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone, Upload, Link as LinkIcon, ImageIcon, X, RotateCcw, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
@@ -9,22 +9,25 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent, SiteContentItem, Testimonial } from "@/hooks/useSiteContent";
 
-type SubTab = "hero" | "stats" | "sections" | "testimonials";
+type SubTab = "navbar" | "hero" | "stats" | "sections" | "testimonials";
 
 export default function AdminLandingControls() {
   const { toast } = useToast();
   const { content, testimonials, getBySection, getValue, refetch } = useSiteContent();
-  const [subTab, setSubTab] = useState<SubTab>("hero");
+  const [subTab, setSubTab] = useState<SubTab>("navbar");
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState("");
+  const [logoUrlInput, setLogoUrlInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Testimonial form
   const [newTestimonial, setNewTestimonial] = useState({ name: "", role: "", quote: "", rating: 5, avatar: "" });
 
   const subTabs: { id: SubTab; label: string; icon: React.ElementType }[] = [
+    { id: "navbar", label: "Navbar", icon: Navigation },
     { id: "hero", label: "Hero Section", icon: Type },
     { id: "stats", label: "Stats Bar", icon: BarChart3 },
     { id: "sections", label: "Section Text", icon: Megaphone },
@@ -106,6 +109,47 @@ export default function AdminLandingControls() {
 
   const handleRemoveBgImage = async () => {
     await saveHeroBgImage("");
+  };
+
+  const saveLogoImage = async (url: string) => {
+    const { error } = await supabase
+      .from("site_content")
+      .update({ value: url, updated_at: new Date().toISOString() } as any)
+      .eq("key", "navbar_logo_image");
+    if (error) toast({ title: "Error saving logo", variant: "destructive" });
+    else { toast({ title: "Logo updated" }); await refetch(); }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+    setUploadingImage(true);
+    const ext = file.name.split(".").pop();
+    const path = `logo-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("site-images").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } else {
+      const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(path);
+      await saveLogoImage(urlData.publicUrl);
+    }
+    setUploadingImage(false);
+    if (logoInputRef.current) logoInputRef.current.value = "";
+  };
+
+  const handleSetLogoUrl = async () => {
+    const url = logoUrlInput.trim();
+    if (!url) return;
+    await saveLogoImage(url);
+    setLogoUrlInput("");
+  };
+
+  const handleRemoveLogo = async () => {
+    await saveLogoImage("");
   };
 
   const handleAddTestimonial = async () => {
@@ -226,6 +270,99 @@ export default function AdminLandingControls() {
             </button>
           ))}
         </div>
+
+        {/* Navbar */}
+        {subTab === "navbar" && (
+          <div className="max-w-2xl space-y-8">
+            {/* Logo */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Site Logo</h3>
+              <div className="rounded-lg border border-border bg-secondary/30 p-4">
+                {getValue("navbar_logo_image") ? (
+                  <div className="mb-4">
+                    <div className="relative inline-block rounded-lg overflow-hidden border border-border bg-background p-3">
+                      <img
+                        src={getValue("navbar_logo_image")}
+                        alt="Logo preview"
+                        className="h-12 object-contain"
+                      />
+                      <button
+                        onClick={handleRemoveLogo}
+                        className="absolute top-1 right-1 rounded-full bg-destructive p-1 text-destructive-foreground hover:opacity-90 transition-opacity"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground truncate">{getValue("navbar_logo_image")}</p>
+                  </div>
+                ) : (
+                  <div className="mb-4 flex h-20 items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30">
+                    <div className="text-center">
+                      <ImageIcon className="mx-auto h-6 w-6 text-muted-foreground/50" />
+                      <p className="mt-1 text-xs text-muted-foreground">No logo set (using default icon)</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">Upload Logo</p>
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => logoInputRef.current?.click()}
+                      disabled={uploadingImage}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {uploadingImage ? "Uploading…" : "Choose File"}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs text-muted-foreground">OR</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">External Image URL</p>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="https://example.com/logo.png"
+                        value={logoUrlInput}
+                        onChange={(e) => setLogoUrlInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleSetLogoUrl(); }}
+                        className="text-sm"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSetLogoUrl}
+                        disabled={!logoUrlInput.trim()}
+                        className="shrink-0"
+                      >
+                        <LinkIcon className="mr-1 h-4 w-4" /> Set URL
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navbar text fields */}
+            <div>
+              <h3 className="font-medium text-foreground mb-4">Navbar Content</h3>
+              {renderContentFields("navbar")}
+            </div>
+          </div>
+        )}
 
         {/* Hero */}
         {subTab === "hero" && (
