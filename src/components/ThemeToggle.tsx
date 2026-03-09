@@ -1,8 +1,9 @@
+import { forwardRef } from "react";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
-export default function ThemeToggle() {
+const ThemeToggle = forwardRef<HTMLDivElement>((_, ref) => {
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark")
   );
@@ -20,14 +21,19 @@ export default function ThemeToggle() {
   }, []);
 
   return (
-    <Button
-      size="sm"
-      variant="ghost"
-      className="text-muted-foreground hover:text-foreground"
-      onClick={() => setDark((d) => !d)}
-      aria-label="Toggle dark mode"
-    >
-      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </Button>
+    <div ref={ref}>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="text-muted-foreground hover:text-foreground"
+        onClick={() => setDark((d) => !d)}
+        aria-label="Toggle dark mode"
+      >
+        {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </Button>
+    </div>
   );
-}
+});
+
+ThemeToggle.displayName = "ThemeToggle";
+export default ThemeToggle;
