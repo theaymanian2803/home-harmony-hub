@@ -86,10 +86,14 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="gradient-caramel rounded-xl p-2">
-            <Building2 className="h-5 w-5 text-accent-foreground" />
-          </div>
-          <span className="font-display text-xl font-bold text-foreground">EstateHub</span>
+          {logoImage ? (
+            <img src={logoImage} alt={siteName} className="h-9 w-auto object-contain" />
+          ) : (
+            <div className="gradient-caramel rounded-xl p-2">
+              <Building2 className="h-5 w-5 text-accent-foreground" />
+            </div>
+          )}
+          <span className="font-display text-xl font-bold text-foreground">{siteName}</span>
         </Link>
 
         {/* Desktop nav */}
