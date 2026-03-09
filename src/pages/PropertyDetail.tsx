@@ -34,6 +34,7 @@ export default function PropertyDetail() {
   const [property, setProperty] = useState<ExtendedProperty | null | undefined>(undefined);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const { saved, toggle, isLoggedIn } = useSaveProperty(property?.id ?? "");
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -83,8 +84,6 @@ export default function PropertyDetail() {
       </div>
     );
   }
-
-  const { saved, toggle, isLoggedIn } = useSaveProperty(property.id);
   const propertyReviews = reviews.filter((r) => r.propertyId === property.id);
   const hasMultipleImages = property.images.length > 1;
   const hasCoords = property.latitude != null && property.longitude != null;
