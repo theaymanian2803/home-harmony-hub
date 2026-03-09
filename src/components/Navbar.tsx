@@ -68,6 +68,11 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const { t } = useTranslation();
+  const { getValue } = useSiteContent();
+
+  const siteName = getValue("navbar_site_name", "EstateHub");
+  const logoImage = getValue("navbar_logo_image");
+  const ctaText = getValue("navbar_cta_text", t("nav.listProperty"));
 
   const handleSignOut = async () => {
     await signOut();
