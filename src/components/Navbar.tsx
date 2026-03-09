@@ -251,7 +251,7 @@ export default function Navbar() {
               </Link>
             )}
             <Button size="sm" className="mt-2 gradient-caramel text-accent-foreground hover:opacity-90 rounded-xl" asChild>
-              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setMobileOpen(false)}>{t("nav.listProperty")}</Link>
+              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setMobileOpen(false)}>{ctaText}</Link>
             </Button>
           </nav>
         </div>
