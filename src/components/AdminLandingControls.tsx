@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent, SiteContentItem, Testimonial } from "@/hooks/useSiteContent";
 
-type SubTab = "hero" | "stats" | "sections" | "testimonials";
+type SubTab = "navbar" | "hero" | "stats" | "sections" | "testimonials";
 
 export default function AdminLandingControls() {
   const { toast } = useToast();
