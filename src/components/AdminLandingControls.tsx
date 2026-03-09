@@ -14,7 +14,7 @@ type SubTab = "navbar" | "hero" | "stats" | "sections" | "testimonials";
 export default function AdminLandingControls() {
   const { toast } = useToast();
   const { content, testimonials, getBySection, getValue, refetch } = useSiteContent();
-  const [subTab, setSubTab] = useState<SubTab>("hero");
+  const [subTab, setSubTab] = useState<SubTab>("navbar");
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
