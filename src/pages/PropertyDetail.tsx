@@ -27,6 +27,18 @@ interface ExtendedProperty extends Property {
   hoa_fee?: number; property_style?: string;
 }
 
+interface SellerInfo {
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  company_name: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  website: string | null;
+  show_phone: boolean;
+  show_email: boolean;
+}
+
 export default function PropertyDetail() {
   const { id } = useParams();
   const { toast } = useToast();
@@ -34,6 +46,7 @@ export default function PropertyDetail() {
   const [property, setProperty] = useState<ExtendedProperty | null | undefined>(undefined);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [seller, setSeller] = useState<SellerInfo | null>(null);
   const { saved, toggle, isLoggedIn } = useSaveProperty(property?.id ?? "");
 
   useEffect(() => {
@@ -64,6 +77,20 @@ export default function PropertyDetail() {
     };
     if (id) fetchProperty();
   }, [id]);
+
+  // Fetch seller profile
+  useEffect(() => {
+    if (!property?.sellerId) return;
+    const fetchSeller = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, email, phone, company_name, bio, avatar_url, website, show_phone, show_email")
+        .eq("id", property.sellerId)
+        .single();
+      if (data) setSeller(data as any);
+    };
+    fetchSeller();
+  }, [property?.sellerId]);
 
   // Track view count
   useEffect(() => {
@@ -226,11 +253,36 @@ export default function PropertyDetail() {
             <div className="sticky top-24 space-y-6">
               <div className="rounded-lg border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10"><User className="h-5 w-5 text-accent" /></div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 overflow-hidden">
+                    {seller?.avatar_url ? (
+                      <img src={seller.avatar_url} alt={seller.full_name || "Seller"} className="h-full w-full object-cover" />
+                    ) : (
+                      <User className="h-5 w-5 text-accent" />
+                    )}
+                  </div>
                   <div>
-                    <p className="font-semibold text-foreground">{property.sellerName}</p>
+                    <p className="font-semibold text-foreground">{seller?.full_name || property.sellerName}</p>
+                    {seller?.company_name && <p className="text-xs text-accent font-medium">{seller.company_name}</p>}
                     <p className="text-xs text-muted-foreground">{t("property.verifiedSeller")}</p>
                   </div>
+                </div>
+                {seller?.bio && <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{seller.bio}</p>}
+                <div className="mt-3 space-y-1.5">
+                  {seller?.show_phone && seller?.phone && (
+                    <a href={`tel:${seller.phone}`} className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors">
+                      📞 {seller.phone}
+                    </a>
+                  )}
+                  {seller?.show_email && seller?.email && (
+                    <a href={`mailto:${seller.email}`} className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors">
+                      ✉️ {seller.email}
+                    </a>
+                  )}
+                  {seller?.website && (
+                    <a href={seller.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-foreground hover:text-accent transition-colors">
+                      🌐 Website
+                    </a>
+                  )}
                 </div>
               </div>
 

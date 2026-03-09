@@ -19,9 +19,10 @@ import { formatPrice } from "@/data/mockData";
 import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 import SubscriptionManagement from "@/components/SubscriptionManagement";
 import DashboardAnalytics from "@/components/DashboardAnalytics";
+import SellerProfileForm from "@/components/SellerProfileForm";
 import { useTranslation } from "react-i18next";
 
-type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
+type Tab = "overview" | "create" | "manage" | "edit" | "subscription" | "profile";
 interface PropertyRow { id: string; title: string; price: number; views: number; status: string; }
 interface SavesCount { property_id: string; saves_count: number; }
 
@@ -68,6 +69,7 @@ export default function SellerDashboard() {
     { id: "overview", label: t("dashboard.overview"), icon: LayoutDashboard },
     { id: "create", label: t("dashboard.newListing"), icon: Plus },
     { id: "manage", label: t("dashboard.manage"), icon: List },
+    { id: "profile", label: "My Profile", icon: Edit },
     { id: "subscription", label: t("dashboard.subscription"), icon: CreditCard },
   ];
 
@@ -238,6 +240,8 @@ export default function SellerDashboard() {
             )}
           </div>
         )}
+
+        {tab === "profile" && <SellerProfileForm userId={user.id} />}
 
         {tab === "subscription" && <SubscriptionManagement isSubscribed={isSubscribed} details={details} onCancel={cancelSubscription} />}
       </div>
