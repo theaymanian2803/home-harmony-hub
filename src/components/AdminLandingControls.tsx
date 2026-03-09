@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Save, Plus, Trash2, Star, Eye, EyeOff, Type, BarChart3, MessageSquareQuote, Megaphone, Upload, Link as LinkIcon, ImageIcon, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -181,10 +182,28 @@ export default function AdminLandingControls() {
           </div>
           {subTab !== "testimonials" && (
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setEditedValues({})} disabled={saving || Object.keys(editedValues).length === 0}>
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Discard
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" disabled={saving || Object.keys(editedValues).length === 0}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Discard
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You have {Object.keys(editedValues).length} unsaved change(s). This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => setEditedValues({})} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Discard Changes
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button onClick={handleSaveAll} disabled={saving || Object.keys(editedValues).length === 0} className="gradient-caramel text-accent-foreground hover:opacity-90">
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Saving…" : `Save Changes${Object.keys(editedValues).length > 0 ? ` (${Object.keys(editedValues).length})` : ""}`}
