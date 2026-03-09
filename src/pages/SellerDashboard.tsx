@@ -19,9 +19,10 @@ import { formatPrice } from "@/data/mockData";
 import PropertyForm, { type PropertyFormData } from "@/components/PropertyForm";
 import SubscriptionManagement from "@/components/SubscriptionManagement";
 import DashboardAnalytics from "@/components/DashboardAnalytics";
+import SellerProfileForm from "@/components/SellerProfileForm";
 import { useTranslation } from "react-i18next";
 
-type Tab = "overview" | "create" | "manage" | "edit" | "subscription";
+type Tab = "overview" | "create" | "manage" | "edit" | "subscription" | "profile";
 interface PropertyRow { id: string; title: string; price: number; views: number; status: string; }
 interface SavesCount { property_id: string; saves_count: number; }
 
