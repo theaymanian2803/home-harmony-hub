@@ -78,6 +78,20 @@ export default function PropertyDetail() {
     if (id) fetchProperty();
   }, [id]);
 
+  // Fetch seller profile
+  useEffect(() => {
+    if (!property?.sellerId) return;
+    const fetchSeller = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, email, phone, company_name, bio, avatar_url, website, show_phone, show_email")
+        .eq("id", property.sellerId)
+        .single();
+      if (data) setSeller(data as any);
+    };
+    fetchSeller();
+  }, [property?.sellerId]);
+
   // Track view count
   useEffect(() => {
     if (id) {
