@@ -1,4 +1,4 @@
-import { forwardRef, useMemo } from "react";
+import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface PropertyRow {
@@ -27,7 +27,7 @@ const COLORS = [
   "hsl(25, 55%, 58%)",
 ];
 
-const DashboardAnalytics = forwardRef<HTMLDivElement, Props>(({ listings, savesData = [] }, ref) => {
+export default function DashboardAnalytics({ listings, savesData = [] }: Props) {
   const savesMap = useMemo(() => {
     const map: Record<string, number> = {};
     savesData.forEach((s) => { map[s.property_id] = s.saves_count; });
@@ -63,14 +63,14 @@ const DashboardAnalytics = forwardRef<HTMLDivElement, Props>(({ listings, savesD
 
   if (listings.length === 0) {
     return (
-      <div ref={ref} className="mt-6 text-center py-12 text-muted-foreground">
+      <div className="mt-6 text-center py-12 text-muted-foreground">
         <p>No listing data to display analytics. Create some listings first!</p>
       </div>
     );
   }
 
   return (
-    <div ref={ref} className="mt-6 space-y-6">
+    <div className="mt-6 space-y-6">
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         {[
           { label: "Total Listings", value: listings.length },
@@ -134,7 +134,4 @@ const DashboardAnalytics = forwardRef<HTMLDivElement, Props>(({ listings, savesD
       </div>
     </div>
   );
-});
-
-DashboardAnalytics.displayName = "DashboardAnalytics";
-export default DashboardAnalytics;
+}
