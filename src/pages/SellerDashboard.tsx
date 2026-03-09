@@ -241,6 +241,8 @@ export default function SellerDashboard() {
           </div>
         )}
 
+        {tab === "profile" && <SellerProfileForm userId={user.id} />}
+
         {tab === "subscription" && <SubscriptionManagement isSubscribed={isSubscribed} details={details} onCancel={cancelSubscription} />}
       </div>
     </div>
